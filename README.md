@@ -1,3 +1,42 @@
+# UPDATES !!!
+
+## Po drugim dniu (24.11)
+
+**Kod i repozytorium**
+- `main` zostaje punktem startowym kursu: materiały, historie czatu i poprawki.
+- Zrób fork (`gh repo fork --remote`) i rozwijaj aplikację w swojej gałęzi `app-implementation`, nie w `main`. Nowe materiały pobierzesz poleceniem `git pull upstream main`, a potem `git merge main` w gałęzi aplikacji.
+- [PR #5](https://github.com/LucasMatuszewski/jsystems-ai-programming-2026-11/pull/5) w gałęzi `research/polish-language-in-llms`: raport "polski vs angielski w LLM" (Markdown i interaktywny HTML, PL i EN), skill `evidence-research` i plik `skills-lock.json`.
+
+**Podsumowanie i czat**
+- [Podsumowanie dnia 2](course-materials/zoom-summary-chat-history/day-2-summary.md): research z subagentami, GitHub CLI i tokeny PAT, fork i tożsamość Git, Skills (tworzenie, instalacja, bezpieczeństwo), `/context`, statusline, PRD i ADR.
+- [Historia czatu z dnia 2](course-materials/zoom-summary-chat-history/day-2-chat-history.md) ze wszystkimi linkami, poleceniami i promptami z zajęć.
+- [Skrypt statusline](course-materials/agent-configs/claude/statusline.sh) do skopiowania do `~/.claude/`.
+
+**Odpowiedzi na pytania grupy i nowe materiały**
+- [Pytania i odpowiedzi](https://devpowers.com/szkolenia/jsystems/ai-programming-2026-11/pytania.html): krótkie odpowiedzi na Wasze pytania (Azure DevOps, artefakty Claude, cache przy zmianie modelu) i inne częste pytania.
+- [Azure DevOps z agentami](course-materials/cicd-headless/azure-devops/README.md): `az boards` i `az repos` zamiast `gh`/`glab`, PAT i tokeny Entra, serwer MCP Azure DevOps oraz pipeline z recenzją PR przez Claude Code.
+- [Cache przy zmianie modelu i effort](course-materials/Research/prompt-caching-model-switch-and-effort-2026-11-24.md): każdy model ma własny cache, co zmiana effort robi z cache i jak sprawdzić trafienia.
+- [Artefakty Claude: przechowywanie, udostępnianie i własność](course-materials/Research/claude-artifacts-retention-ownership-2026-11-24.md). Pobierz ważne artefakty przed usunięciem kont kursowych.
+- [Indeks kursu](course-materials/Course%20INDEX%20-%20AI%20in%20Programming.md): badanie METR o przyspieszeniu prac nad AI w Anthropic, wykres OpenAI "Perplexity and Intelligence", dowód hipotezy Riemanna z Claude, rosnąca luka modeli open-weight i MaxxBench.
+- [Menedżery agentów](course-materials/Research/agent-managers-and-remote-agents.md): Herdr z aplikacją desktopową i mobilną, GitKraken Kepler, Delta od twórców Zed.
+
+## Po pierwszym dniu (23.11)
+
+**Kod i repozytorium**
+- `main` zostaje punktem startowym kursu (materiały, historie czatu, poprawki).
+- Swoją aplikację rozwijasz na VM w gałęzi `feat/moja-aplikacja` ([instrukcja startu, slajd 9](https://devpowers.com/szkolenia/jsystems/ai-programming-2026-11/Prezentacja_01_Start_kursu.html#9)). Nowe materiały pobierzesz z `main` poleceniem `git pull origin main`.
+
+**Podsumowanie i czat**
+- [Podsumowanie dnia 1](course-materials/zoom-summary-chat-history/day-1-summary.md): modele i rankingi, Vibe Coding, pierwsze kroki z Claude Code, zadania zaplanowane, tokeny.
+- [Historia czatu z dnia 1](course-materials/zoom-summary-chat-history/day-1-chat-history.md) ze wszystkimi linkami z zajęć.
+- [Indeks kursu](course-materials/Course%20INDEX%20-%20AI%20in%20Programming.md): pojęcia, narzędzia, dokumentacja, badania i osoby warte śledzenia.
+
+**Na rano w dniu 2**
+- Sprawdź, czy Twoje zadanie zaplanowane uruchomiło się około 6:00.
+- Przygotuj wynik swojej aplikacji lub gry z Arena.ai do pokazania.
+
+---
+
 # AI dla programistów - od pomysłu do MVP (JSystems)
 
 **Materiały szkoleniowe: [devpowers.com/szkolenia/jsystems/ai-programming-2026-11](https://devpowers.com/szkolenia/jsystems/ai-programming-2026-11/)**
@@ -77,13 +116,16 @@ Wybierz materiał do zadania:
 - **Codex na Windows:** [konfiguracja i test działania](course-materials/agent-configs/codex/WINDOWS-QUICKSTART-PL.md), [regresje sandboxa i formularzy pytań](course-materials/Research/codex-sandbox-facts-and-limitations-2026-11-06.md). Po zmianie konfiguracji zrestartuj daemon i zacznij nową sesję, zamiast wznawiać poprzednią.
 - **Hooki i zgody:** [ochrona plików i przykłady hooków](course-materials/hooks-example/), [Context7](course-materials/hooks-example/context7/), [permissions a hooki](course-materials/hooks-example/context7/permissions-vs-hooks.md).
 - **CI/CD i code review:** [przegląd przykładów](course-materials/cicd-headless/), [agent review dla różnych CI](course-materials/cicd-headless/agent-review/), [PR-Agent i Qodo](course-materials/cicd-headless/PR-Agent-Qodo/), [Codex i Bitbucket](course-materials/cicd-headless/codex-bitbucket/).
+- **Legacy:** [oryginalny kod jFTP (Java)](https://github.com/sai-pullabhotla/jftp) w osobnym klonie poza tym repozytorium, [prezentacja Legacy](https://devpowers.com/szkolenia/jsystems/ai-programming-2026-11/Prezentacja_07_Legacy.html) i skill [legacy-codebase-workflows](https://github.com/EdukeyTeam/agent-toolbox/tree/main/skills/legacy-codebase-workflows).
 - **Ćwiczenia i dalsza lektura:** [dane syntetyczne](course-materials/exercise-data/), [workflow agentów i oszczędzanie tokenów](course-materials/Research/agent-workflows-and-token-budget-2026-10-24.md).
 
 Przykłady są opcjonalne: skopiowanie repozytorium nie instaluje hooków ani profili. Przed uruchomieniem sprawdź instrukcję danego materiału, wersję narzędzia i politykę organizacji.
 
 ## Granice
 
-Używaj wyłącznie danych syntetycznych. `course-tools` nie blokuje odczytu .env/secrets. Przed dodaniem prawdziwego klucza API przejdź na profil ścisły i sprawdź blokadę na fałszywej wartości w dokładnie docelowym pliku według [instrukcji Windows](course-materials/agent-configs/codex/WINDOWS-QUICKSTART-PL.md#zanim-dodasz-prawdziwy-klucz-api). Serwer z prawdziwym kluczem uruchamiaj z własnego terminala. Do tego czasu używaj modelu testowego bez klucza. Przed przekazaniem kontekstu agentowi sprawdź politykę organizacji i zakres dostępu. Przejrzyj każdy diff, wynik testów i uprawnienia proponowanych narzędzi. Testów nie zmieniaj po to, by ukryć nieukończone zachowanie.
+Używaj wyłącznie danych syntetycznych. W Claude Code reguły `deny` w [`.claude/settings.json`](.claude/settings.json) blokują m.in. odczyt plików `.env` i katalogów `secrets/`, `sudo`, `curl`, usuwanie plików oraz `git push` z jawnie wpisaną gałęzią `main`. To dopasowanie wzorców poleceń, a nie pełna ochrona: samo `git push` na gałęzi śledzącej `main` nie zostanie zablokowane, dlatego aplikację rozwijaj na osobnej gałęzi. Polecenia wymagające `sudo` (np. instalację pakietów) uruchamiaj we własnym terminalu. Serwery MCP projektu są w [`.mcp.json`](.mcp.json). Context7 odpowiada też bez klucza, ale z niskim limitem zapytań. Klucz (zaczyna się od `ctx7sk`) wygenerujesz poleceniem `npx ctx7 setup --claude` albo w [panelu Context7](https://context7.com/dashboard). Zapisz go w zmiennej środowiskowej, np. `export CONTEXT7_API_KEY=...` w `~/.bashrc`, a nie w `.mcp.json`: plik odczyta go jako `${CONTEXT7_API_KEY:-}` i bez zmiennej połączy się bez klucza.
+
+Przy porównaniu z Codex: `course-tools` nie blokuje odczytu .env/secrets. Przed dodaniem prawdziwego klucza API przejdź na profil ścisły i sprawdź blokadę na fałszywej wartości w dokładnie docelowym pliku według [instrukcji Windows](course-materials/agent-configs/codex/WINDOWS-QUICKSTART-PL.md#zanim-dodasz-prawdziwy-klucz-api). Serwer z prawdziwym kluczem uruchamiaj z własnego terminala. Do tego czasu używaj modelu testowego bez klucza. Przed przekazaniem kontekstu agentowi sprawdź politykę organizacji i zakres dostępu. Przejrzyj każdy diff, wynik testów i uprawnienia proponowanych narzędzi. Testów nie zmieniaj po to, by ukryć nieukończone zachowanie.
 
 Możliwość użycia agenta chmurowego, MCP, CLI i pul AI Credits zależy od planu oraz ustawień organizacji. Agent w IDE i agent chmurowy to osobne środowiska. Funkcje edytora mogą się różnić od CLI i od innych IDE. Polecenia i ustawienia narzędzi szybko się zmieniają, więc sprawdzaj je w aktualnej dokumentacji producenta.
 

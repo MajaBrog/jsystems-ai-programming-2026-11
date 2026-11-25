@@ -95,7 +95,7 @@ Verify only the scope relevant to your change. If the change affects runtime beh
 **Env Vars:** See `.env.example` (OPENROUTER_API_KEY required)
 
 ### Sub-agents
-- Prefer ad hoc subagents for one-off work. Reuse a named role only after checking its model and permissions; add a short custom definition (for example under `.codex/agents/`) only for a recurring need. The starting repository has no active custom roles.
+- Prefer ad hoc subagents for one-off work. Reuse a named role only after checking its model and permissions; add a short custom definition (for example under `.claude/agents/` for Claude Code or `.codex/agents/` for Codex) only for a recurring need. The starting repository has no active custom roles.
 - Delegate bounded tasks with explicit dependencies and disjoint file ownership. The coordinating agent reviews diffs and verification evidence before committing.
 
 ### Commit Rules
