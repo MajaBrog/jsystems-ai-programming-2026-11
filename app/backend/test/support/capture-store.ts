@@ -46,6 +46,14 @@ export function summarizeRequestBody(raw: string): unknown {
   }
 }
 
+/** Replaces account identifiers that OpenRouter echoes in error bodies; returns the body and the change notes. */
+export function redactBody(body: Buffer): { body: Buffer; changes: string[] } {
+  const text = body.toString('utf8');
+  const redacted = text.replace(/"user_id"\s*:\s*"[^"]*"/g, '"user_id":"user_REDACTED"');
+  if (redacted === text) return { body, changes: [] };
+  return { body: Buffer.from(redacted, 'utf8'), changes: ['body.user_id replaced with "user_REDACTED" (OpenRouter account identifier; not committed)'] };
+}
+
 export async function saveCapture(dir: string, capture: Capture): Promise<void> {
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, `${capture.meta.name}.meta.json`), JSON.stringify(capture.meta, null, 2) + '\n');

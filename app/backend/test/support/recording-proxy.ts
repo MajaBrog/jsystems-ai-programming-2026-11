@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { saveCapture, safeHeaders, summarizeRequestBody } from './capture-store.ts';
+import { redactBody, saveCapture, safeHeaders, summarizeRequestBody } from './capture-store.ts';
 
 export type RecordingProxy = {
   url: string;
@@ -65,6 +65,7 @@ export async function startRecordingProxy(opts: { upstream: string; captureDir: 
     if (!target) return; // unnamed exchanges are forwarded but not saved
     const summary = summarizeRequestBody(reqBody.toString('utf8'));
     const model = summary && typeof summary === 'object' && 'model' in summary ? String((summary as { model: unknown }).model) : null;
+    const redacted = redactBody(Buffer.concat(chunks));
     pending.push(
       saveCapture(opts.captureDir, {
         meta: {
@@ -73,10 +74,11 @@ export async function startRecordingProxy(opts: { upstream: string; captureDir: 
           target: url.origin,
           model,
           ...(target.note ? { note: target.note } : {}),
+          ...(redacted.changes.length ? { changes: redacted.changes } : {}),
           request: { method: req.method ?? 'GET', path: url.pathname, headers: safeHeaders(req.headers), body: summary },
           response: { status: upstreamRes.status, headers: safeHeaders(respHeaders) },
         },
-        body: Buffer.concat(chunks),
+        body: redacted.body,
       }),
     );
   });

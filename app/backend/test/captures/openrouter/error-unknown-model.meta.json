@@ -1,0 +1,58 @@
+{
+  "name": "error-unknown-model",
+  "capturedAt": "2026-11-26T13:30:09.383Z",
+  "target": "https://openrouter.ai",
+  "model": "nonexistent-vendor/nonexistent-model-xyz",
+  "request": {
+    "method": "POST",
+    "path": "/api/v1/chat/completions",
+    "headers": {
+      "host": "127.0.0.1:45843",
+      "connection": "keep-alive",
+      "accept": "application/json",
+      "user-agent": "OpenAI/JS 7.65.0",
+      "x-stainless-retry-count": "0",
+      "x-stainless-lang": "js",
+      "x-stainless-package-version": "7.65.0",
+      "x-stainless-os": "Linux",
+      "x-stainless-arch": "x64",
+      "x-stainless-runtime": "node",
+      "x-stainless-runtime-version": "v24.21.0",
+      "content-type": "application/json",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "accept-encoding": "gzip, deflate",
+      "content-length": "98"
+    },
+    "body": {
+      "model": "nonexistent-vendor/nonexistent-model-xyz",
+      "messages": [
+        {
+          "role": "user",
+          "content": "test"
+        }
+      ]
+    }
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "access-control-allow-origin": "*",
+      "access-control-expose-headers": "WWW-Authenticate,PAYMENT-REQUIRED,Payment-Receipt,PAYMENT-RESPONSE,Location,X-Generation-Id,x-openrouter-error-origin,x-openrouter-error-tool,X-Provider-Name,request-id,x-openrouter-subscription-passthrough,anthropic-ratelimit-unified-status,Retry-After,cf-ray",
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "cf-ray": "a6093f006a4dc603-WAW",
+      "content-type": "application/json",
+      "date": "Thu, 26 Nov 2026 13:30:09 GMT",
+      "permissions-policy": "payment=(self \"https://checkout.stripe.com\" \"https://connect-js.stripe.com\" \"https://js.stripe.com\" \"https://*.js.stripe.com\" \"https://hooks.stripe.com\")",
+      "referrer-policy": "no-referrer, strict-origin-when-cross-origin",
+      "server": "cloudflare",
+      "x-content-type-options": "nosniff",
+      "x-generation-id": "gen-1795699809-ub0qmbxXYNmCrqWBxPjg",
+      "x-openrouter-error-origin": "client",
+      "x-openrouter-release": "api;6974da3e-2d30-4253-9b9d-763143ceef81"
+    }
+  },
+  "changes": [
+    "body.user_id replaced with \"user_REDACTED\" (OpenRouter account identifier; not committed)"
+  ]
+}

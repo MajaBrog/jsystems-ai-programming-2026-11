@@ -53,6 +53,25 @@ describe('recording proxy', () => {
   });
 });
 
+describe('recording proxy redaction', () => {
+  it('replaces account identifiers (user_id) in saved JSON bodies and records the change', async () => {
+    const upstream = await localUpstream((_req, res) => {
+      res.writeHead(400, { 'content-type': 'application/json' });
+      res.end('{"error":{"message":"bad","code":400},"user_id":"user_abc123"}');
+    });
+    const dir = await mkdtemp(join(tmpdir(), 'cap-'));
+    const proxy = await startRecordingProxy({ upstream, captureDir: dir });
+    closers.push(() => proxy.close());
+    proxy.nextCaptureName('redact-sample');
+    const res = await fetch(`${proxy.url}/x`, { method: 'POST', body: '{}' });
+    expect(await res.text()).toContain('user_abc123'); // the live caller still gets the real bytes
+    await proxy.flush();
+    const cap = await loadCapture(dir, 'redact-sample');
+    expect(cap.body.toString()).toBe('{"error":{"message":"bad","code":400},"user_id":"user_REDACTED"}');
+    expect(cap.meta.changes).toEqual([expect.stringContaining('user_id')]);
+  });
+});
+
 describe('replay server', () => {
   it('serves a saved capture byte-for-byte and records incoming requests', async () => {
     const upstream = await localUpstream((_req, res) => { res.writeHead(201, { 'content-type': 'application/json' }); res.end('{"ok":true}'); });

@@ -56,3 +56,20 @@ Timeouts (AC-30, per step): non-streaming calls use the SDK `timeout` = `LLM_TIM
 - TAC-005-04: `npm run start:bundled` serves the SPA at `/`, `/case/<uuid>` returns `index.html`, `/api/unknown` returns 404 JSON.
 
 **Review trigger:** if the course or team requires the JVM stack again, or `node:sqlite` shows data-integrity problems.
+
+## 6. T05 spike results (2026-11-26, `openai/gpt-6-luna`, captures in `app/backend/test/captures/openrouter/`)
+
+| Assumption (ADR-002 D6 / §3.1) | Result |
+|---|---|
+| Base URL join | Confirmed: SDK with `baseURL=…/api/v1` calls `/api/v1/chat/completions` |
+| Image part + strict `json_schema` in one call | Confirmed for vision (3 captures, laptop and phone photos, both case types) |
+| Structured outputs for decision and chat-evaluate | Confirmed (valid JSON matching the Zod schemas) |
+| Streaming | Confirmed: 37 chunks, first token ≈ 0.9 s, ends with `data: [DONE]` |
+| `: OPENROUTER PROCESSING` keep-alive comments | **Not observed** in the recorded stream → the "keep-alive stall" test row is dropped (D6 rule) and recorded as a gap |
+| Error classes | 401 → SDK `AuthenticationError`; unknown model → HTTP **400** (`BadRequestError`), not 404 |
+| Attribution header | Not verified (no `OPENROUTER_APP_TITLE` in `.env`); both `X-Title` and `X-OpenRouter-Title` remain sent when set |
+| Error bodies echo the OpenRouter `user_id` | Redacted to `user_REDACTED` by the recording proxy (documented in the capture's `changes`) |
+
+Behavioral observations (data only, not assertions about photo content): phone photo submitted as TV → `usable=false`, `CATEGORY_MISMATCH`; the RETURN decision for the laptop photo was REJECT, so the physical-store statement kept REJECT (`categoryChanged=false`, contradiction listed) — consistent with Z-6.1. Consequence for T35: the AC-28 E2E scenario must start from a case whose initial category is ACCEPT or NEEDS_REVIEW.
+
+No assumption was refuted in a way that changes ADR-002 D1/D4/D5; the T13 gate is open.
