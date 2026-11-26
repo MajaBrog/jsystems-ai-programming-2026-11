@@ -260,7 +260,75 @@ Start: `cd app && npm run dev`; drive `http://localhost:4200` with `playwright-c
 - **Review check (T38):** `grep -rlE "SYNTHETIC|hand-written" BE/src/test FE/src` is empty and every file in `tres/wiremock/**` and `FE/src/testing/**` names its source capture.
 
 ### 8.4 Traceability results
-(filled in T36: AC/TAC → test or QA step)
+Audit 2026-11-26 (T36; OpenCode free model timed out after 15 min → Haiku subagent per §12 fallback; orchestrator spot-checked 12 mapped test names, all exist). Paths: BE = `app/backend/test`, FE = `app/frontend/src/app`, E2E = `app/e2e/tests`, QA = §8.2 Manual QA item.
+
+| ID | Verified by |
+|---|---|
+| AC-01 | FE `case-form.page.spec` layout (PRD 9.1); QA 1 |
+| AC-02 | FE `case-form.page.spec` "empty submit… (AC-02, AC-09)"; BE `cases/submission` "complaint without description → 400" |
+| AC-03 | FE `case-form.page.spec` "requires description for Complaint only… (AC-03)" |
+| AC-04 | FE + BE "future purchase date… (AC-04)" |
+| AC-05 | FE model-name/description counters; BE model-name and 2000-char tests |
+| AC-06 | FE `photo-drop-zone.spec` "replaces the first photo… (AC-06)" |
+| AC-07 | FE `photo-drop-zone.spec` content-based rejection; BE "non-image bytes → 415 (AC-07)" |
+| AC-08 | FE "larger than 10 MB… (AC-08)"; BE size limit → 413 |
+| AC-09 | FE "empty submit sends no request… (AC-09)" |
+| AC-10 | FE "while processing… no second request (AC-10)" |
+| AC-11 | BE `cases/submission` "JPEG ≤ 1568 px (AC-11, TAC-001-04)"; BE `imaging/image-compressor` |
+| AC-12 | BE `ai/steps/ai-steps` vision-return replay; BE `ai/domain/schemas`; QA 2 |
+| AC-13 | BE `ai/steps/ai-steps` "vision-complaint-phone-1 … (AC-13)" — **added in T36** |
+| AC-14 | BE "unusable photo → photo_unusable (AC-14)"; FE photo_unusable state; QA 5 (observed in UI) |
+| AC-15 | BE `ai/domain/schemas` enum rejection; BE `outputValidator` category enum |
+| AC-16 | BE `outputValidator` next-steps/rule-id cases; BE `firstMessageComposer` bullets with rule ids |
+| AC-17 | BE `promptRepository` "one policy per case type (AC-17)"; BE `ai-steps` decision-complaint |
+| AC-18 | BE `policyGuard` G1 (14 vs 15 days); E2E `rules` late return (Z-2.1) |
+| AC-19 | BE `policyGuard` G2 (AC-19) |
+| AC-20 | BE `policyGuard` G3; E2E `rules` old complaint (R-2.1) |
+| AC-21 | BE `policyGuard` G4 (R-4.1, R-4.2) |
+| AC-22 | BE `policyGuard` G5; BE `firstMessageComposer` "Do wyjaśnienia" |
+| AC-23 | BE `firstMessageComposer` order (AC-23); E2E `return-flow` |
+| AC-24 | FE `case-chat.page.spec` summary panel; E2E `return-flow` |
+| AC-25 | FE "cannot send empty… (AC-25)"; BE chat 400 cases |
+| AC-26 | BE `cases/chat` full context (AC-26); E2E `session-chat`; QA 6 |
+| AC-27 | FE streaming "typing indicator… send disabled" |
+| AC-28 | BE `cases/chat` assessment_changed; E2E `rules` physical-store revision; T19 probe |
+| AC-29 | FE `markdown.spec`, `case-chat.page.spec` (AC-29); E2E `return-flow` |
+| AC-30 | FE error/network/interrupted cases; BE failures → error; BE `ai-steps` timeout; QA 10 (observed in UI with invalid key) |
+| AC-31 | BE `cases/chat` failures (AC-31); FE errors (AC-31); QA 10 (observed in UI) |
+| AC-32 | BE `cases/submission` happy path persists one unit of work; BE `persistence` round-trips |
+| AC-33/34 | E2E `session-chat` reload + fresh page + unknown UUID; FE not-found |
+| AC-35 | E2E `session-chat` "Nowe zgłoszenie… (AC-35)" |
+| AC-36 | E2E `session-chat` Polish agent text; FE `labels.spec` English-word scan; FE Polish datepicker labels; QA 7 |
+| AC-37 | E2E `responsive` 360×740 on Chromium + Firefox; **Edge: human (H7)** |
+| TAC-01 / TAC-005-01 | Commands: `npm test` (BE 300+ tests), `npm run typecheck` 0 errors, `npx ng test --no-watch`, `npx ng build` no warnings — recorded in the PR |
+| TAC-02 | Command checks: `grep -r OPENROUTER app/frontend/dist` empty; key absent from backend logs (invalid-key runs); BE `config` never echoes values |
+| TAC-03 | BE `config` fail-fast |
+| TAC-04 | This table (every AC mapped) |
+| TAC-05 / TAC-005-03 | E2E `smoke`; BE `health` |
+| TAC-06 / TAC-001-02 / TAC-003-03 | BE `cases/submission` + `cases/chat` failure rows, photo deleted on DB failure; BE `persistence` rollback |
+| TAC-001-01 | T19 probe on :8080 and :4200 (incremental `stage`/`token` timings recorded in the T19 commit); BE `ai-steps` chunkDelay |
+| TAC-001-03 | BE `sse-event-writer` single terminal event |
+| TAC-001-04 | BE `ai-steps` decodes the recorded data URL; BE `cases/submission` |
+| TAC-001-05 | BE `config/errors` no CORS headers |
+| TAC-001-06 / TAC-005-04 | BE `config/spa-static`; verified on the real Angular build (T30) |
+| TAC-002-01 | BE `ai-steps` request path; live spike |
+| TAC-002-02 | BE `cases/*` teardown re-checks persisted assessments against G1/G3 (`test/support/guard-rules.ts`, mutation-tested) — **added in T36** (old tag was misleading) |
+| TAC-002-03 | BE `firstMessageComposer` exact notice; BE `cases/chat` change line first |
+| TAC-002-04 / TAC-005-02 | BE `support/captures-hygiene` (metadata, no key/Authorization/account id) — **added in T36** |
+| TAC-002-05 | BE `ai-steps` timeout + stream inactivity (rejection; +2 s bound not asserted — accepted gap) |
+| TAC-002-06 | BE `contextBuilder` + `requests` no customer text in system prompt |
+| TAC-003-01 / -05 | BE `persistence` fresh dir; BE `startup-checks` |
+| TAC-003-02 | BE `persistence` invariants helper (mutation-tested) + teardown in `cases/*` |
+| TAC-003-04 | Command: `git status --short` clean after the suites; `data/` gitignored (T00) |
+| TAC-004-01 | Command: `grep -r OPENROUTER app/frontend/dist` empty (T25) |
+| TAC-004-02 | FE `labels.spec` (label maps); templates reviewed in QA 1/6 |
+| TAC-004-03 | Not automated — accepted gap; streaming observed live in QA 6 (tokens appear as they arrive) |
+| TAC-004-04 | E2E suite, no interception (grep empty), screenshots in `app/e2e/screenshots/` |
+| TAC-004-05 | QA 12 keyboard pass (tab order complete); FE Enter/Shift+Enter; badges carry text + icon |
+| TAC-004-06 | E2E console-error fixture in every spec (smoke added in T36) |
+| TAC-004-07 | Playwright projects chromium + firefox; Edge: human (H7) |
+
+Accepted gaps (documented, not automated): TAC-002-05 "+2 s" bound, TAC-004-03 500 ms latency, Edge (H7).
 
 ---
 
