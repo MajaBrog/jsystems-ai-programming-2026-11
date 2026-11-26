@@ -4,6 +4,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import { systemClock, type Clock } from './config/clock.ts';
 import type { AppConfig } from './config/config.ts';
 import { registerErrorHandling } from './config/errors.ts';
+import { registerCaseRoutes, type CaseRoutesDeps } from './cases/case-routes.ts';
 
 export const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 
@@ -15,6 +16,8 @@ export type AppOptions = {
   maxPhotoBytes?: number;
   /** Bundled mode: absolute path of the built Angular app (dist/frontend/browser). Unset in dev. */
   frontendDir?: string;
+  /** Case endpoints (ADR-001); omitted in tests that only need health/static. */
+  cases?: CaseRoutesDeps;
 };
 
 /** Builds the Fastify application (no CORS: the SPA is same-origin via the dev proxy or bundled mode). */
@@ -32,6 +35,8 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
 
   app.decorate('clock', options.clock ?? systemClock);
   app.get('/api/health', async () => ({ status: 'UP' }));
+
+  if (options.cases) await registerCaseRoutes(app, options.cases);
 
   return app;
 }
