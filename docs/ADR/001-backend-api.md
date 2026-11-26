@@ -289,7 +289,7 @@ sequenceDiagram
 | Spoofed image | Unit + Integration | `.jpg` with PDF bytes | 415 `UNSUPPORTED_IMAGE` | corrupt JPEG with valid header → 415 |
 | WEBP input | Unit | WEBP with alpha | JPEG output, long edge ≤ 1568, background white | 4000×3000 → 1568×1176; 800×600 unchanged |
 | Photo unusable | Integration | stub from the real category-mismatch capture (ADR-002 D6 item 2) | `photo_unusable` event with mapped Polish message, 0 rows, no file | — |
-| LLM timeout | Integration | real vision capture replayed with fixed delay > timeout (test timeout 2 s) | `error LLM_UNAVAILABLE`, 0 rows | real 401 capture → `LLM_UNAVAILABLE`; capture with JSON body truncated (derived) → `LLM_INVALID_OUTPUT`; 5xx only per plan D-4 |
+| LLM timeout | Integration | real vision capture replayed with fixed delay > timeout (test timeout 2 s) | `error LLM_UNAVAILABLE`, 0 rows | real 401 capture → `LLM_UNAVAILABLE`; capture with JSON body truncated (derived) → `LLM_INVALID_OUTPUT`; 503 = real 401 capture with status/code changed (derived) → `LLM_UNAVAILABLE` |
 | DB failure on persist | Unit (mocked repo throws) | — | `error INTERNAL_ERROR`, photo file deleted | — |
 | GET case | Integration | existing / unknown / malformed id | 200 view without image analysis / 404 / 404 | — |
 | Chat turn no change | Integration | real chat-evaluate "unchanged" capture + streaming capture | `token`* then `completed`; 2 message rows; no `assessment_changed` | guard normalizes a proposed change back to current → same result |

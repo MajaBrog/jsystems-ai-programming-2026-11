@@ -157,7 +157,7 @@ Server-side field errors (400) are mapped onto the matching form controls; unkno
 - `@microsoft/fetch-event-source`: unmaintained.
 - `HttpClient` progress events: unverified incremental delivery, awkward parsing.
 **Consequences:**
-- (+) No dependency, fully unit-testable with a fake `ReadableStream`.
+- (+) No dependency, fully unit-testable: a `ReadableStream` replays **real SSE bytes recorded from the running backend** (`app/frontend/src/testing/captures/`, produced by the plan's T19 probe).
 - (-) `HttpClient` interceptors do not apply to these two calls (none are needed: no auth).
 **Review trigger:** If authentication headers or global interceptors are introduced.
 
@@ -290,8 +290,8 @@ sequenceDiagram
 | Future date (AC-04) | Unit | typed tomorrow | error text exact | today valid; `[max]` disables future days |
 | Model/description lengths (AC-05) | Unit | 1/101 chars; 2001 chars | errors; counter shows `n/2000` | — |
 | Photo type/size (AC-07, AC-08) | Unit (`PhotoDropZone`) | `.gif`, 10 MB + 1 B file | exact Polish messages, no preview | second file replaces first (AC-06) |
-| Submission states (AC-10, AC-14, AC-30) | Unit (fake `CaseApi` Observable) | stage → photo_unusable / error / completed | stage texts, disabled form, photo cleared only on unusable, navigation on completed | 400 field errors mapped |
-| SSE parser | Unit | chunks splitting events and multibyte Polish chars at arbitrary boundaries; `:` comment lines | correct event sequence | missing terminal event → error; non-2xx JSON → `ApiError` |
+| Submission states (AC-10, AC-14, AC-30) | Unit (`CaseApi` mocked with event sequences parsed from recorded backend captures) | stage → photo_unusable / error / completed | stage texts, disabled form, photo cleared only on unusable, navigation on completed | 400 field errors mapped |
+| SSE parser | Unit | recorded backend streams (submission + chat) replayed split at arbitrary byte boundaries, incl. inside multibyte Polish chars; `:` comment lines | correct event sequence | missing terminal event → error; non-2xx JSON → `ApiError` |
 | SSE abort | Unit | unsubscribe mid-stream | `AbortController.abort()` called | — |
 | Chat streaming (AC-27, AC-28) | Unit | events assessment_changed, token×n, completed | badge updates first; input disabled until completed; final content = `completed.message.content` | — |
 | Chat error (AC-31) | Unit | error event | local msgs removed, text restored, retry visible | 409 message |

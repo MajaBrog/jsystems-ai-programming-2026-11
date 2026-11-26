@@ -250,7 +250,7 @@ OpenRouter wire contract used: `POST {base}/chat/completions` with `model`, `mes
 4. chat-evaluate unchanged (a neutral question) and changed (customer states the device was bought in a physical store);
 5. streaming chat reply;
 6. HTTP 401 (invalid key) and 400/404 (unknown model id).
-Each capture is saved under `src/test/resources/openrouter-captures/` with date, model, request summary, no secrets. **Derivation rule:** a WireMock stub may only (a) replay a named capture, (b) change field values inside it, or (c) add delay/truncation; the stub header names the capture and lists every change. Cases that cannot be provoked safely (429, 402, 5xx, mid-stream `finish_reason:"error"`, keep-alive-only stall) are handled per plan decision D-4 (documented synthetic stub approved by the human, or test row dropped).
+Each capture is saved under `src/test/resources/openrouter-captures/` with date, model, request summary, no secrets. **Derivation rule:** a WireMock stub may only (a) replay a named capture, (b) change field values inside it, or (c) add delay/truncation; the stub header names the capture and lists every change. Cases that cannot be provoked safely are **never written from documentation**; they are derived from real captures only: 429/402/5xx = the real 401 (or 400) capture with the HTTP status and the error `code` value changed; mid-stream error = the real streaming capture with the last chunk's `finish_reason` value changed to `"error"`; connection loss = the real streaming capture truncated; timeout = a real capture replayed with a delay; keep-alive stall = only if a real `: OPENROUTER PROCESSING` comment was recorded (replayed, then delayed) — otherwise that test row is dropped and the gap recorded in the plan.
 **Rejected alternatives:**
 - Stubs written from documentation: may not match real responses.
 **Consequences:**
@@ -370,7 +370,7 @@ sequenceDiagram
 | Image request shape | Integration | PNG upload | request has text part before `image_url` part with `data:image/jpeg;base64,` | — |
 | Invalid output repair | Integration | decision capture with `category` value changed to `"MAYBE"` (derived variant), then the original capture | success, 2 requests | 2 invalid → `LLM_INVALID_OUTPUT` |
 | Stream truncated | Integration | streaming capture truncated mid-way (connection closed, derived variant) | `LlmUnavailableException` | inactivity timeout via added delay |
-| Mid-stream error chunk | Integration — only if D-4 approves a documented synthetic stub | stream ending with `finish_reason:"error"` | `LlmUnavailableException` | — |
+| Mid-stream error chunk | Integration | real streaming capture with the last chunk's `finish_reason` changed to `"error"` (derived variant) | `LlmUnavailableException` | 503 = real 401 capture with status/code changed → `LlmUnavailableException` |
 | Base URL join | Integration | WireMock base `http://localhost:{port}/api/v1` | request path `/api/v1/chat/completions` | trailing slash in env |
 | No `OPENAI_API_KEY` use | Unit | env with `OPENAI_API_KEY` set, `OPENROUTER_API_KEY` empty | startup fails | — |
 | Real model smoke (spike / E2E) | E2E | photos from `assets/example-images/` | valid structured output, Polish text (no assumption about the category) | — |

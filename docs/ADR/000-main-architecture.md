@@ -440,7 +440,7 @@ Before writing any WireMock stub, record real OpenRouter calls (list and method 
 |---|---|---|---|
 | Unit (backend) | All deps mocked | PolicyGuard, prompt/context builders, message composer, image compression, validators, SSE event mapping | JUnit 5, Mockito, AssertJ |
 | Integration (backend) | Only OpenRouter stubbed | Controllers + real SQLite (temp file) + real filesystem (temp dir) + SDK against WireMock | Spring Boot Test, WireMock 3.13.2 |
-| Unit (frontend) | All deps mocked | Form validation, SSE parser, chat state, components with Material harnesses | Vitest (Angular CLI builder), Angular Material harnesses |
+| Unit (frontend) | All deps mocked; backend responses used as mock data are **recorded from the running backend** (SSE streams and JSON captured by the probe in plan T19), never written from the ADR-001 contract | Form validation, SSE parser, chat state, components with Material harnesses | Vitest (Angular CLI builder), Angular Material harnesses |
 | E2E | Nothing mocked | Real browser, real backend, real OpenRouter | Playwright 1.65.1 |
 
 ### Key test scenarios
@@ -449,7 +449,7 @@ Detailed per-area tables are in 001–004. Cross-cutting scenarios:
 - **Complaint E2E**: example photos submitted as complaints with a description of the problem → same structural assertions; AC-21 itself is covered by guard unit tests (G4) because the model's view of a photo is not assumed.
 - **Late return**: purchase 30 days ago → never "Przyjęte wstępnie", 14-day rule cited (guard unit test + E2E).
 - **Unusable photo**: stub from the real category-mismatch capture → `photo_unusable`, no DB rows (integration); E2E submits a phone photo with category TV and expects either `photo_unusable` (CATEGORY_MISMATCH) or a completed assessment — the run records which (the model decides).
-- **LLM timeout**: WireMock delay > timeout → `error` event within timeout + 2 s, no DB rows.
+- **LLM timeout**: a real vision capture replayed by WireMock with a delay > timeout → `error` event within timeout + 2 s, no DB rows.
 - **Chat revision**: stub from the real chat-evaluate "changed" capture (`categoryChanged=true`) → `assessment_changed` first, message starts with notice, new assessment row.
 - **Resume**: reload `/case/{id}` → identical history (E2E).
 
