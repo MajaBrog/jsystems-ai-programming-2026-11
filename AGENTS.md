@@ -14,6 +14,7 @@ Chat in Polish unless the user asks for another language. Repository documentati
 - `docs/PRD.md` — product requirements and acceptance criteria
 - `docs/ADR/` — Architecture Decision Records
 - `docs/design-guidelines.md` — design system and tokens
+- `assets/example-images/` — real device photos for upload tests, E2E and Manual QA; follow the usage rules in its `README.md` (no renaming, no generated images, never tell the model what a photo shows)
 
 ---
 
