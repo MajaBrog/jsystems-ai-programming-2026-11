@@ -64,13 +64,24 @@ export type Outcome = 'chat' | 'unusable';
 /** Submits and waits for the real model: either the chat opens or the unusable-photo state shows. */
 export async function submit(page: Page): Promise<Outcome> {
   await page.getByRole('button', { name: 'Wyślij zgłoszenie' }).click();
-  const chat = page.waitForURL(/\/case\/[0-9a-f-]{36}$/).then(() => 'chat' as const);
+  const chat = page.waitForURL(/\/case\/[0-9a-f-]{36}$/, { timeout: 120_000 }).then(() => 'chat' as const);
   const unusable = page
-    .locator('.form-alert[role=alert]')
-    .first()
-    .waitFor({ state: 'visible' })
+    .getByTestId('photo-unusable')
+    .waitFor({ state: 'visible', timeout: 120_000 })
     .then(() => 'unusable' as const);
-  return Promise.race([chat, unusable]);
+  const serviceError = page
+    .getByTestId('service-error')
+    .waitFor({ state: 'visible', timeout: 120_000 })
+    .then(async () => {
+      throw new Error(`Service error shown on submit: ${(await page.getByTestId('service-error').innerText()).trim()}`);
+    });
+  // Swallow the losers' rejections (their waits end when the page closes) so no promise dangles.
+  const racers = [chat, unusable, serviceError];
+  try {
+    return await Promise.race(racers);
+  } finally {
+    racers.forEach((r) => r.catch(() => undefined));
+  }
 }
 
 export const firstAgent = (page: Page) => page.locator('[data-role=AGENT]').first();

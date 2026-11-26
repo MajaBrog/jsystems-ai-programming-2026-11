@@ -20,12 +20,11 @@ export const MAX_MESSAGE_LENGTH = 2000;
           cdkTextareaAutosize
           cdkAutosizeMinRows="1"
           cdkAutosizeMaxRows="6"
-          [attr.maxlength]="max"
           [value]="text()"
           (input)="text.set($any($event.target).value)"
           (keydown.enter)="onEnter($event)"
         ></textarea>
-        <mat-hint align="end">{{ text().length }}/{{ max }}</mat-hint>
+        <mat-hint align="end">{{ length() }}/{{ max }}</mat-hint>
       </mat-form-field>
       <button
         mat-flat-button
@@ -44,9 +43,10 @@ export class ChatInput {
   readonly busy = input(false);
   readonly send = output<void>();
   protected readonly max = MAX_MESSAGE_LENGTH;
+  protected readonly length = computed(() => [...this.text()].length); // code points, like the backend
   protected readonly canSend = computed(() => {
     const t = this.text().trim();
-    return !this.busy() && t.length > 0 && this.text().length <= MAX_MESSAGE_LENGTH;
+    return !this.busy() && t.length > 0 && this.length() <= MAX_MESSAGE_LENGTH;
   });
 
   protected onEnter(event: Event) {

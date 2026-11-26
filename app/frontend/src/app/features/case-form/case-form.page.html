@@ -49,7 +49,7 @@
     <div class="field">
       <span class="field-label">Zdjęcie urządzenia</span>
       @if (photoAlert(); as message) {
-        <div class="alert form-alert" role="alert">
+        <div class="alert form-alert" role="alert" data-testid="photo-unusable">
           <p>{{ message }}</p>
           <p class="tips">{{ unusableTips }}</p>
         </div>
@@ -61,7 +61,7 @@
       <div class="alert form-alert" role="alert">{{ message }}</div>
     }
     @if (serviceError(); as message) {
-      <div class="alert form-alert" role="alert">
+      <div class="alert form-alert" role="alert" data-testid="service-error">
         <p>{{ message }}</p>
         <button mat-flat-button type="submit">Spróbuj ponownie</button>
       </div>

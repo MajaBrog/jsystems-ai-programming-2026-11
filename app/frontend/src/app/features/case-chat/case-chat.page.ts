@@ -142,7 +142,7 @@ export class CaseChatPage {
 
   protected async send(): Promise<void> {
     const text = this.draft().trim();
-    if (!text || this.streaming() || text.length > 2000) return;
+    if (!text || this.streaming() || [...text].length > 2000) return;
 
     const customer: ChatMessageVm = { key: this.nextKey++, role: 'CUSTOMER', content: text, status: 'pending' };
     const agent: ChatMessageVm = { key: this.nextKey++, role: 'AGENT', content: '', status: 'streaming' };
@@ -151,6 +151,7 @@ export class CaseChatPage {
     this.sendError.set(null);
     this.streaming.set(true);
 
+    const previousCategory = this.currentCategory();
     const abort = (this.sendAbort = new AbortController());
     let failure: string | null = null;
     let done = false;
@@ -168,6 +169,7 @@ export class CaseChatPage {
     if (failure) {
       // AC-31: drop the local messages, give the text back, offer a resend.
       this.messages.update((l) => l.filter((m) => m.key !== customer.key && m.key !== agent.key));
+      this.currentCategory.set(previousCategory); // assessment_changed may have arrived before the failure
       this.draft.set(text);
       this.sendError.set(failure);
     }

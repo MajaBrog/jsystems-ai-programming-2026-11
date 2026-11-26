@@ -33,8 +33,11 @@ export const DESCRIPTION_MAX = 2000;
 
 const PHOTO_TIPS = 'Wskazówki: zadbaj o dobre światło, pokaż całe urządzenie i ustaw ostrość na uszkodzeniu.';
 
+/** Unicode code points, matching how the backend counts characters. */
+export const codePoints = (s: string): number => [...s].length;
+
 const modelNameValidator = (control: AbstractControl<string>): ValidationErrors | null => {
-  const length = (control.value ?? '').trim().length;
+  const length = codePoints((control.value ?? '').trim());
   if (length === 0) return { required: true };
   return length < 2 || length > 100 ? { modelLength: true } : null;
 };
@@ -78,7 +81,7 @@ export class CaseFormPage {
     deviceCategory: new FormControl<DeviceCategory | null>(null, Validators.required),
     modelName: new FormControl('', { nonNullable: true, validators: modelNameValidator }),
     purchaseDate: new FormControl<Date | null>(null, Validators.required),
-    description: new FormControl('', { nonNullable: true, validators: Validators.maxLength(DESCRIPTION_MAX) }),
+    description: new FormControl('', { nonNullable: true, validators: (c) => (codePoints(c.value) > DESCRIPTION_MAX ? { maxlength: true } : null) }),
     photo: new FormControl<File | null>(null, Validators.required),
   });
 
@@ -114,7 +117,7 @@ export class CaseFormPage {
       else description.removeValidators(descriptionBlank);
       description.updateValueAndValidity();
     });
-    description.valueChanges.subscribe((v) => this.descriptionLength.set(v.length));
+    description.valueChanges.subscribe((v) => this.descriptionLength.set(codePoints(v)));
   }
 
   /** Message for the first error on a control (server errors take precedence); null when it should not show. */

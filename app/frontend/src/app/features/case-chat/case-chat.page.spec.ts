@@ -139,7 +139,16 @@ describe('CaseChatPage', { timeout: 30_000 }, () => {
       await open({ get: 'case-view-200', post: 'chat-unchanged' });
       await type('abc');
       expect(el.textContent).toContain('3/2000');
-      expect((el.querySelector('textarea') as HTMLTextAreaElement).maxLength).toBe(2000);
+    });
+
+    it('counts code points: 1000 emoji (2000 UTF-16 units) are allowed, 2001 are not', async () => {
+      await open({ get: 'case-view-200', post: 'chat-unchanged' });
+      await type('📱'.repeat(1000));
+      expect(el.textContent).toContain('1000/2000');
+      expect(await (await sendBtn()).isDisabled()).toBe(false);
+      await type('📱'.repeat(2001));
+      expect(el.textContent).toContain('2001/2000');
+      expect(await (await sendBtn()).isDisabled()).toBe(true);
     });
 
     it('Enter sends, Shift+Enter inserts a newline (PRD 9.2)', async () => {
@@ -255,6 +264,19 @@ describe('CaseChatPage', { timeout: 30_000 }, () => {
       expect(bubbles('AGENT').length).toBe(agentBefore + 1);
       expect(el.textContent).not.toContain('Wyślij ponownie');
       expect(await (await input()).getValue()).toBe('');
+    });
+
+    it('restores the previous badge when the stream is interrupted after assessment_changed', async () => {
+      const frames = CAPTURES['chat-assessment-changed'].response.body.split('\n\n').filter(Boolean).slice(0, 2); // assessment_changed + first token, no terminal event
+      const body = frames.map((f) => f + '\n\n').join('');
+      await open({ get: 'case-view-200', post: () => new Response(body, { status: 200, headers: { 'content-type': 'text/event-stream' } }) });
+      expect(badge()).toContain('Wymaga weryfikacji');
+      await type('Chcę doprecyzować');
+      await send();
+      expect(badge()).toContain('Wymaga weryfikacji');
+      expect(badge()).not.toContain('Odrzucone');
+      expect(await (await input()).getValue()).toBe('Chcę doprecyzować');
+      await loader.getHarness(MatButtonHarness.with({ text: 'Wyślij ponownie' }));
     });
 
     it('network failure behaves like an error event', async () => {

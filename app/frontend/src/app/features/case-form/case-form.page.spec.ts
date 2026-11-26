@@ -196,6 +196,10 @@ describe('CaseFormPage', () => {
       ['Ab', false],
       ['a'.repeat(100), false],
       ['a'.repeat(101), true],
+      ['📱', true], // one code point (2 UTF-16 units), like the backend counts
+      ['📱📱', false],
+      ['📱'.repeat(100), false],
+      ['📱'.repeat(101), true],
     ])('model name %j invalid=%s (AC-05, 2-100 after trim)', async (value, invalid) => {
       const model = await input('modelName');
       await model.setValue(value);
@@ -208,6 +212,18 @@ describe('CaseFormPage', () => {
       await description.setValue('abc');
       expect(text()).toContain('3/2000');
       await description.setValue('a'.repeat(2001));
+      await description.blur();
+      expect(text()).toContain('2001/2000');
+      expect(errorOf('description')).toBe('Opis może mieć maksymalnie 2000 znaków.');
+    });
+
+    it('counts description code points, not UTF-16 units (AC-05)', async () => {
+      const description = await input('description');
+      await description.setValue('📱'.repeat(1000));
+      await description.blur();
+      expect(text()).toContain('1000/2000');
+      expect(errorOf('description')).toBeNull();
+      await description.setValue('📱'.repeat(2001));
       await description.blur();
       expect(text()).toContain('2001/2000');
       expect(errorOf('description')).toBe('Opis może mieć maksymalnie 2000 znaków.');
