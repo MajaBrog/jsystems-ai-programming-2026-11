@@ -3,7 +3,7 @@
 Plan row T11 + plan §0 (Rev. 3). Worker: Claude Sonnet subagent. Checkout: `/home/labuser/jsystems-ai-programming-2026-11/.claude/worktrees/prd-hardware-copilot`, branch `feat/hardware-copilot-poc`. Backend = Node 24 + TypeScript + Fastify (**read `docs/ADR/005-backend-runtime-node.md` first**, then `app/backend/AGENTS.md`).
 
 ## Goal
-Modules `imageValidator`, `imageCompressor`, `photoStore` in `app/backend/src/imaging/` per ADR-001 §3 (ImageValidator / ImageCompressor / PhotoStore rows), D2, D3, TAC-001-04 and ADR-003 §5 (storage layout), translated to `sharp` per ADR-005 §2. PRD AC-07 (accepted types JPEG/PNG/WEBP by **content**, not extension), AC-08 (≤ 10 MB), AC-11 (compressed before the model: JPEG, long edge ≤ 1568 px, quality 85, EXIF rotate, alpha flattened on white).
+Modules `imageValidator`, `imageCompressor`, `photoStore` in `app/backend/src/imaging/` per ADR-001 §3 (ImageValidator / ImageCompressor / PhotoStore rows), D2, D3, TAC-001-04 and ADR-003 §5 (storage layout), translated to `sharp` per ADR-005 §2. PRD AC-07 (accepted types JPEG/PNG/WEBP by **content**, not extension), AC-08 (≤ 10 MB), AC-11 (compressed before the model: JPEG, long edge ≤ 1568 px, quality 80 (ADR-001 D2 says 0.8), EXIF rotate, alpha flattened on white).
 
 ## Editable files (only)
 `app/backend/src/imaging/**`, `app/backend/test/imaging/**`. Concurrent: T12 writes `app/backend/src/ai/**` + `test/ai/**`; orchestrator writes `src/config/**`, `src/persistence/**`, `src/app.ts`, `package.json`. Do not touch those. Do not commit or `git add`.
