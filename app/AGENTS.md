@@ -7,6 +7,7 @@ Two independent builds talking only over HTTP (`/api`, contract in `docs/ADR/001
 - `npm run dev` — backend (`:8080`) and frontend (`:4200`, proxies `/api`) together; data in `<repo>/data/` (gitignored).
 - `npm run dev:frontend` / `npm run dev:backend` — one side only.
 - `npm test` — backend + frontend unit/integration tests.
+- `npm run e2e` — Playwright E2E (Chromium + Firefox) on the real stack with the real model; reuses a running `npm run dev`.
 - `bash scripts/with-env.sh <cmd>` — run with the checkout-root `.env` (falls back to the main worktree's `.env`); already-set variables win. `bash scripts/with-env.sh env-check` lists which variables are set, never values. Never read `.env` directly.
 
 ## Rules

@@ -6,7 +6,8 @@
     "dev": "concurrently --names backend,frontend --prefix-colors blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
     "dev:backend": "cd backend && APP_DATA_DIR=\"${APP_DATA_DIR:-$PWD/../../data}\" bash ../scripts/with-env.sh npm run dev",
     "dev:frontend": "cd frontend && npx ng serve",
-    "test": "npm --prefix backend test && npm --prefix frontend exec -- ng test --no-watch"
+    "test": "npm --prefix backend test && npm --prefix frontend exec -- ng test --no-watch",
+    "e2e": "cd e2e && npx playwright test"
   },
   "devDependencies": {
     "concurrently": "10.0.7"
