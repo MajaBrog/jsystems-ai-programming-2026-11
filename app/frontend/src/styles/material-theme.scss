@@ -54,4 +54,39 @@ html {
       corner-extra-large: var(--radius-lg),
     )
   );
+
+  // Brand inputs (design-guidelines "Inputs"): white, 3px ink outline, 7px radius, yellow focus ring.
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: var(--hairline),
+      outlined-hover-outline-color: var(--hairline),
+      outlined-focus-outline-color: var(--accent-warm),
+      outlined-outline-width: 3px,
+      outlined-focus-outline-width: 3px,
+      outlined-container-shape: var(--radius-button),
+    )
+  );
+
+  // Brand primary button (design-guidelines "Primary button"): red, white Bangers 20px, 7px radius.
+  @include mat.button-overrides(
+    (
+      filled-container-color: var(--accent),
+      filled-label-text-color: var(--on-accent),
+      filled-label-text-font: var(--font-display),
+      filled-label-text-size: 20px,
+      filled-label-text-tracking: 0.02em,
+      filled-container-shape: var(--radius-button),
+    )
+  );
+}
+
+// Outline + hard shadow are not Material tokens: add them here, once.
+.mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-text-field-wrapper {
+  background: var(--surface-raised);
+  border-radius: var(--radius-button);
+}
+
+.mat-mdc-unelevated-button:not([disabled]) {
+  border: var(--border-default) solid var(--on-surface);
+  box-shadow: var(--shadow-md);
 }

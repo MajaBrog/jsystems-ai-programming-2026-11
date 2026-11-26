@@ -9,6 +9,8 @@ import { appConfig } from './app.config';
 describe('appConfig', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: appConfig.providers }));
 
+
+
   it('provides Polish LOCALE_ID', () => {
     expect(TestBed.inject(LOCALE_ID)).toBe('pl');
   });

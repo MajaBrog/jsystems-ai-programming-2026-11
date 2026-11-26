@@ -7,6 +7,7 @@ import { ApiError, AssessmentCategory, CaseView, ChatEvent, MessageView } from '
 import { AppMarkdown } from '../../shared/markdown/markdown';
 import { CaseSummaryPanel } from './case-summary-panel';
 import { ChatInput } from './chat-input';
+import { MATERIAL_PAGE_PROVIDERS } from '../../core/i18n/material-page-providers';
 
 interface ChatMessageVm {
   key: number;
@@ -22,6 +23,7 @@ const REPLY_IN_PROGRESS = 'Poprzednia odpowiedź jest jeszcze generowana.';
 
 @Component({
   selector: 'app-case-chat-page',
+  providers: [MATERIAL_PAGE_PROVIDERS],
   imports: [RouterLink, MatButtonModule, MatProgressBarModule, AppMarkdown, CaseSummaryPanel, ChatInput],
   styleUrl: './case-chat.page.scss',
   template: `

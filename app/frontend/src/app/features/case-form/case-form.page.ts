@@ -24,6 +24,7 @@ import {
   STAGE_LABELS,
 } from '../../shared/labels/labels';
 import { FORMAT_ERROR, PhotoDropZone, SIZE_ERROR } from '../../shared/photo-drop-zone/photo-drop-zone';
+import { MATERIAL_PAGE_PROVIDERS } from '../../core/i18n/material-page-providers';
 
 export const SERVICE_UNAVAILABLE = 'Usługa jest chwilowo niedostępna. Spróbuj ponownie.';
 export const MODEL_LENGTH_ERROR = 'Nazwa modelu musi mieć od 2 do 100 znaków.';
@@ -43,6 +44,7 @@ const descriptionBlank = (control: AbstractControl<string>): ValidationErrors | 
 
 @Component({
   selector: 'app-case-form-page',
+  providers: [MATERIAL_PAGE_PROVIDERS],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,

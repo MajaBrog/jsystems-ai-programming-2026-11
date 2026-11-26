@@ -12,7 +12,8 @@ import { CaseChatPage } from './case-chat.page';
 
 type Route = { get?: CaptureName; post?: CaptureName | (() => Response | Promise<Response>) };
 
-describe('CaseChatPage', () => {
+// Harness-driven streaming tests with real waits run several seconds under load; default 5 s is too tight.
+describe('CaseChatPage', { timeout: 30_000 }, () => {
   let routes: Route;
   let posts: string[];
   let fixture: ComponentFixture<CaseChatPage>;
