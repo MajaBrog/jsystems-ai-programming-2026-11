@@ -1,7 +1,7 @@
 # ADR-001: Backend API, Orchestration and Image Processing
 
 **Date:** 2026-11-25
-**Status:** Accepted
+**Status:** Accepted — Java/Spring/library specifics superseded by [ADR-005](005-backend-runtime-node.md); contracts and logic unchanged
 **Relates to:** [`000-main-architecture.md`](000-main-architecture.md)
 
 ---

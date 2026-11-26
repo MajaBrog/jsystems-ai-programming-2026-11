@@ -1,7 +1,7 @@
 # ADR: Hardware Service Decision Copilot — Main Architecture
 
 **Date:** 2026-11-25
-**Status:** Accepted
+**Status:** Accepted — backend runtime amended by [ADR-005](005-backend-runtime-node.md) (Node.js 24 + TypeScript instead of Java 21 + Spring Boot, 2026-11-26)
 **PRD:** [`docs/PRD.md`](../PRD.md)
 
 ---

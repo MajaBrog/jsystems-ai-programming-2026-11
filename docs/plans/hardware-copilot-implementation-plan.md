@@ -13,6 +13,29 @@
 
 ---
 
+## 0. Rev. 3 — backend on Node.js (human decision "A", 2026-11-26)
+
+Execution stopped at T02 (no JDK; `sudo` needs a password the agent cannot supply). The human chose to move the backend to **Node.js 24 + TypeScript** — [ADR-005](../ADR/005-backend-runtime-node.md). Where this plan says Maven/Java/WireMock, read:
+
+| Plan text | Now |
+|---|---|
+| H1 JDK, H2 Initializr, H6 `./mvnw`/`java` allowlist | **Dropped** — not needed |
+| T02 Backend scaffold (`./mvnw verify`) | `app/backend` npm project (Fastify, openai, zod, sharp, Vitest, TypeScript `--noEmit`); `npm test` + `npm run typecheck` green with one health test |
+| `pom.xml` hotspot + hook | `app/backend/package.json` (orchestrator) |
+| `./mvnw verify` / `-Dgroups=live` | `npm test` / `npm run test:live` (from `app/backend`) |
+| `./mvnw spring-boot:run` | `npm run dev` (from `app/backend`) |
+| T05 WireMock record mode | recording proxy `test/support/recording-proxy.ts` → `test/captures/openrouter/` |
+| T13 WireMock stubs (`tres/wiremock/**`) | replay server `test/support/replay-server.ts` serving captures; derivation rule unchanged |
+| `pkg/…`, `tpkg/…`, `res/…`, `tres/…` | `app/backend/src/…`, `app/backend/test/…`, `app/backend/resources/…`, `app/backend/test/captures/…` |
+| T30 `-Pbundle-frontend` JAR | `npm run start:bundled` with `@fastify/static` (TAC-005-04) |
+| T06 output location | moved to `app/backend/resources/{policies,prompts}/` |
+
+Still blocking: **H3** (`OPENROUTER_API_KEY` in the checkout-root `.env`) for T05, T19, T35, T37. T01 (issues) waits for the human (`gh repo edit` denied by the classifier; the fork must be addressed with `-R MajaBrog/…`).
+
+Execution checkout: the planning worktree on branch `feat/hardware-copilot-poc` (the session runs there).
+
+---
+
 ## 1. Current state (verified 2026-11-26)
 
 **Planning checkout:** worktree `.claude/worktrees/prd-hardware-copilot`, branch `docs/hardware-copilot-prd-adr-plan` (stacked on local `design-system` @ `1c86086`, which is one merge commit ahead of `origin/design-system`).
