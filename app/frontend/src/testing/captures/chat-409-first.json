@@ -1,0 +1,26 @@
+{
+  "name": "chat-409-first",
+  "capturedAt": "2026-11-26T13:37:08.595Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "POST",
+    "path": "/api/cases/{id}/messages",
+    "body": {
+      "content": "Ile trwa rozpatrzenie zgłoszenia?"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "keep-alive",
+      "content-type": "text/event-stream;charset=UTF-8",
+      "date": "Thu, 26 Nov 2026 13:37:04 GMT",
+      "keep-alive": "timeout=72",
+      "transfer-encoding": "chunked",
+      "x-accel-buffering": "no"
+    },
+    "body": "event: token\ndata: {\"text\":\"Sk\"}\n\nevent: token\ndata: {\"text\":\"lep\"}\n\nevent: token\ndata: {\"text\":\" odpow\"}\n\nevent: token\ndata: {\"text\":\"iada\"}\n\nevent: token\ndata: {\"text\":\" na\"}\n\nevent: token\ndata: {\"text\":\" rekl\"}\n\nevent: token\ndata: {\"text\":\"amac\"}\n\nevent: token\ndata: {\"text\":\"ję\"}\n\nevent: token\ndata: {\"text\":\" w\"}\n\nevent: token\ndata: {\"text\":\" cią\"}\n\nevent: token\ndata: {\"text\":\"gu\"}\n\nevent: token\ndata: {\"text\":\" **\"}\n\nevent: token\ndata: {\"text\":\"14\"}\n\nevent: token\ndata: {\"text\":\" dni\"}\n\nevent: token\ndata: {\"text\":\" od\"}\n\nevent: token\ndata: {\"text\":\" otr\"}\n\nevent: token\ndata: {\"text\":\"zymania\"}\n\nevent: token\ndata: {\"text\":\" urządzenia\"}\n\nevent: token\ndata: {\"text\":\"**.\"}\n\nevent: completed\ndata: {\"message\":{\"id\":7,\"role\":\"AGENT\",\"content\":\"Sklep odpowiada na reklamację w ciągu **14 dni od otrzymania urządzenia**.\",\"createdAt\":\"2026-11-26T13:37:08.590Z\"},\"currentCategory\":\"NEEDS_REVIEW\"}\n\n"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

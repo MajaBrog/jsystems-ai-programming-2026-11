@@ -1,0 +1,21 @@
+{
+  "name": "case-view-200",
+  "capturedAt": "2026-11-26T13:36:58.014Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "GET",
+    "path": "/api/cases/{id}"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "connection": "keep-alive",
+      "content-length": "3131",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 26 Nov 2026 13:36:58 GMT",
+      "keep-alive": "timeout=72"
+    },
+    "body": "{\"id\":\"dbd4a315-cd94-430b-a23b-5e7e9c2f4fff\",\"caseType\":\"COMPLAINT\",\"deviceCategory\":\"LAPTOP\",\"modelName\":\"Testowy Laptop 14\",\"purchaseDate\":\"2026-05-10\",\"description\":\"Urządzenie przestało działać poprawnie podczas normalnego użytkowania.\",\"photoUrl\":\"/api/cases/dbd4a315-cd94-430b-a23b-5e7e9c2f4fff/photo\",\"currentCategory\":\"NEEDS_REVIEW\",\"assessments\":[{\"category\":\"NEEDS_REVIEW\",\"previousCategory\":null,\"source\":\"INITIAL\",\"justification\":[{\"ruleId\":\"R-4.6\",\"text\":\"Analiza zdjęcia wskazuje na mechaniczne pęknięcie ekranu, natomiast opis zgłoszenia wiąże usterkę z normalnym użytkowaniem. Taka rozbieżność wymaga weryfikacji.\"},{\"ruleId\":\"R-7.3\",\"text\":\"Dane są sprzeczne, dlatego zgłoszenie wymaga oceny zespołu serwisowego przed ustaleniem, czy zachodzi wyłączenie odpowiedzialności.\"},{\"ruleId\":\"R-4.1\",\"text\":\"Uszkodzenia mechaniczne spowodowane przez klienta nie są objęte reklamacją; na podstawie dostępnych danych nie można jednak jednoznacznie ustalić przyczyny pęknięcia.\"}],\"nextSteps\":[\"Zespół serwisowy zweryfikuje stan urządzenia oraz przyczynę usterki.\",\"Po wstępnej ocenie urządzenie należy odesłać na adres wskazany przez zespół serwisowy, dołączając opis usterki i okoliczności jej powstania oraz dowód zakupu.\",\"Sklep odpowiada na reklamację w ciągu 14 dni od otrzymania urządzenia.\"],\"createdAt\":\"2026-11-26T13:36:16.623Z\"}],\"messages\":[{\"id\":1,\"role\":\"AGENT\",\"content\":\"Dzień dobry,\\n\\nDotyczy zgłoszenia: reklamacja, urządzenie: Testowy Laptop 14.\\n\\n**Wstępna ocena: Wymaga weryfikacji**\\n\\n### Uzasadnienie\\n\\n- Analiza zdjęcia wskazuje na mechaniczne pęknięcie ekranu, natomiast opis zgłoszenia wiąże usterkę z normalnym użytkowaniem. Taka rozbieżność wymaga weryfikacji. (R-4.6)\\n- Dane są sprzeczne, dlatego zgłoszenie wymaga oceny zespołu serwisowego przed ustaleniem, czy zachodzi wyłączenie odpowiedzialności. (R-7.3)\\n- Uszkodzenia mechaniczne spowodowane przez klienta nie są objęte reklamacją; na podstawie dostępnych danych nie można jednak jednoznacznie ustalić przyczyny pęknięcia. (R-4.1)\\n\\n### Do wyjaśnienia\\n\\n- Nie można ustalić, czy pęknięcie ekranu spowodowało zgłaszaną usterkę ani czy powstało wskutek uszkodzenia mechanicznego objętego wyłączeniem; zespół serwisowy sprawdzi urządzenie i zweryfikuje przyczynę.\\n- Opis wskazuje na nieprawidłowe działanie podczas normalnego użytkowania, a analiza zdjęcia wykazuje wyraźne pęknięcie ekranu i wskazuje prawdopodobną przyczynę mechaniczną.\\n\\n### Następne kroki\\n\\n1. Zespół serwisowy zweryfikuje stan urządzenia oraz przyczynę usterki.\\n2. Po wstępnej ocenie urządzenie należy odesłać na adres wskazany przez zespół serwisowy, dołączając opis usterki i okoliczności jej powstania oraz dowód zakupu.\\n3. Sklep odpowiada na reklamację w ciągu 14 dni od otrzymania urządzenia.\\n\\nTo jest wstępna ocena. Ostateczną decyzję podejmie zespół serwisowy po otrzymaniu i sprawdzeniu urządzenia.\",\"createdAt\":\"2026-11-26T13:36:16.623Z\",\"assessmentCategory\":\"NEEDS_REVIEW\"}],\"createdAt\":\"2026-11-26T13:36:16.623Z\"}"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

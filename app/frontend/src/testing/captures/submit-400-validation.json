@@ -1,0 +1,28 @@
+{
+  "name": "submit-400-validation",
+  "capturedAt": "2026-11-26T13:35:51.413Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "POST",
+    "path": "/api/cases",
+    "fields": {
+      "caseType": "COMPLAINT",
+      "deviceCategory": "LAPTOP",
+      "modelName": "X",
+      "purchaseDate": "2026-11-27"
+    },
+    "photo": "phone-1.jpg"
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "connection": "keep-alive",
+      "content-length": "322",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 26 Nov 2026 13:35:51 GMT",
+      "keep-alive": "timeout=72"
+    },
+    "body": "{\"code\":\"VALIDATION_FAILED\",\"message\":\"Popraw zaznaczone pola.\",\"fieldErrors\":[{\"field\":\"modelName\",\"message\":\"Nazwa modelu musi mieć od 2 do 100 znaków.\"},{\"field\":\"purchaseDate\",\"message\":\"Data zakupu nie może być z przyszłości.\"},{\"field\":\"description\",\"message\":\"Opisz usterkę i okoliczności jej powstania.\"}]}"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

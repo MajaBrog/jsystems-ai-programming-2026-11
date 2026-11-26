@@ -1,0 +1,21 @@
+{
+  "name": "case-view-return-phone-3",
+  "capturedAt": "2026-11-26T13:36:58.006Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "GET",
+    "path": "/api/cases/{id}"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "connection": "keep-alive",
+      "content-length": "2735",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 26 Nov 2026 13:36:58 GMT",
+      "keep-alive": "timeout=72"
+    },
+    "body": "{\"id\":\"8567d452-2120-443a-8af9-fb40244ab0f5\",\"caseType\":\"RETURN\",\"deviceCategory\":\"SMARTPHONE\",\"modelName\":\"Testowy Telefon X\",\"purchaseDate\":\"2026-11-23\",\"description\":null,\"photoUrl\":\"/api/cases/8567d452-2120-443a-8af9-fb40244ab0f5/photo\",\"currentCategory\":\"NEEDS_REVIEW\",\"assessments\":[{\"category\":\"NEEDS_REVIEW\",\"previousCategory\":null,\"source\":\"INITIAL\",\"justification\":[{\"ruleId\":\"Z-2.1\",\"text\":\"Od daty zakupu wskazanej w zgłoszeniu do daty jego złożenia upłynęły 3 dni, więc termin 14 dni nie został przekroczony.\"},{\"ruleId\":\"Z-3.6\",\"text\":\"Analiza zdjęcia nie pozwala ocenić całego urządzenia: widoczna jest jedynie jego tylna powierzchnia. Stan wymaga weryfikacji.\"},{\"ruleId\":\"Z-4.2\",\"text\":\"Nie podano, czy konto użytkownika zostało usunięte ani czy urządzenie przywrócono do ustawień fabrycznych; te warunki wymagają sprawdzenia.\"}],\"nextSteps\":[\"Proszę upewnić się, że przed dalszym procedowaniem konto użytkownika zostanie usunięte, a urządzenie przywrócone do ustawień fabrycznych.\",\"W przypadku dalszego procedowania należy przygotować kompletny zestaw oraz dowód zakupu; adres do wysyłki wskaże zespół serwisowy.\"],\"createdAt\":\"2026-11-26T13:36:57.997Z\"}],\"messages\":[{\"id\":3,\"role\":\"AGENT\",\"content\":\"Dzień dobry,\\n\\nDotyczy zgłoszenia: zwrot, urządzenie: Testowy Telefon X.\\n\\n**Wstępna ocena: Wymaga weryfikacji**\\n\\n### Uzasadnienie\\n\\n- Od daty zakupu wskazanej w zgłoszeniu do daty jego złożenia upłynęły 3 dni, więc termin 14 dni nie został przekroczony. (Z-2.1)\\n- Analiza zdjęcia nie pozwala ocenić całego urządzenia: widoczna jest jedynie jego tylna powierzchnia. Stan wymaga weryfikacji. (Z-3.6)\\n- Nie podano, czy konto użytkownika zostało usunięte ani czy urządzenie przywrócono do ustawień fabrycznych; te warunki wymagają sprawdzenia. (Z-4.2)\\n\\n### Do wyjaśnienia\\n\\n- Zespół serwisowy zweryfikuje stan całego urządzenia, ponieważ zdjęcie pokazuje tylko jego widoczną tylną stronę.\\n- Do sprawdzenia pozostaje kompletność zestawu, w tym akcesoriów i dokumentów.\\n- Nie podano, czy konto użytkownika zostało usunięte i czy urządzenie przywrócono do ustawień fabrycznych.\\n\\n### Następne kroki\\n\\n1. Proszę upewnić się, że przed dalszym procedowaniem konto użytkownika zostanie usunięte, a urządzenie przywrócone do ustawień fabrycznych.\\n2. W przypadku dalszego procedowania należy przygotować kompletny zestaw oraz dowód zakupu; adres do wysyłki wskaże zespół serwisowy.\\n\\nTo jest wstępna ocena. Ostateczną decyzję podejmie zespół serwisowy po otrzymaniu i sprawdzeniu urządzenia.\",\"createdAt\":\"2026-11-26T13:36:57.997Z\",\"assessmentCategory\":\"NEEDS_REVIEW\"}],\"createdAt\":\"2026-11-26T13:36:57.997Z\"}"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

@@ -1,0 +1,31 @@
+{
+  "name": "submit-error",
+  "capturedAt": "2026-11-26T13:37:47.544Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "POST",
+    "path": "/api/cases",
+    "fields": {
+      "caseType": "COMPLAINT",
+      "deviceCategory": "LAPTOP",
+      "modelName": "Testowy Laptop 14",
+      "purchaseDate": "2026-05-10",
+      "description": "Urządzenie przestało działać poprawnie podczas normalnego użytkowania."
+    },
+    "photo": "phone-1.jpg"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "keep-alive",
+      "content-type": "text/event-stream;charset=UTF-8",
+      "date": "Thu, 26 Nov 2026 13:37:47 GMT",
+      "keep-alive": "timeout=72",
+      "transfer-encoding": "chunked",
+      "x-accel-buffering": "no"
+    },
+    "body": "event: stage\ndata: {\"stage\":\"ANALYZING_PHOTO\"}\n\nevent: error\ndata: {\"code\":\"LLM_UNAVAILABLE\",\"message\":\"Usługa jest chwilowo niedostępna. Spróbuj ponownie.\"}\n\n"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

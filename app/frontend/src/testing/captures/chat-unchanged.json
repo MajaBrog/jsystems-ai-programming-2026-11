@@ -1,0 +1,26 @@
+{
+  "name": "chat-unchanged",
+  "capturedAt": "2026-11-26T13:37:04.137Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "POST",
+    "path": "/api/cases/{id}/messages",
+    "body": {
+      "content": "Jaką datę zakupu podałem w formularzu?"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "keep-alive",
+      "content-type": "text/event-stream;charset=UTF-8",
+      "date": "Thu, 26 Nov 2026 13:36:58 GMT",
+      "keep-alive": "timeout=72",
+      "transfer-encoding": "chunked",
+      "x-accel-buffering": "no"
+    },
+    "body": "event: token\ndata: {\"text\":\"W\"}\n\nevent: token\ndata: {\"text\":\" formular\"}\n\nevent: token\ndata: {\"text\":\"zu\"}\n\nevent: token\ndata: {\"text\":\" poda\"}\n\nevent: token\ndata: {\"text\":\"ł\"}\n\nevent: token\ndata: {\"text\":\" Pan\"}\n\nevent: token\ndata: {\"text\":\" dat\"}\n\nevent: token\ndata: {\"text\":\"ę\"}\n\nevent: token\ndata: {\"text\":\" zak\"}\n\nevent: token\ndata: {\"text\":\"upu\"}\n\nevent: token\ndata: {\"text\":\":\"}\n\nevent: token\ndata: {\"text\":\" **\"}\n\nevent: token\ndata: {\"text\":\"10\"}\n\nevent: token\ndata: {\"text\":\" maja\"}\n\nevent: token\ndata: {\"text\":\" \"}\n\nevent: token\ndata: {\"text\":\"202\"}\n\nevent: token\ndata: {\"text\":\"6 r\"}\n\nevent: token\ndata: {\"text\":\".**\"}\n\nevent: completed\ndata: {\"message\":{\"id\":5,\"role\":\"AGENT\",\"content\":\"W formularzu podał Pan datę zakupu: **10 maja 2026 r.**\",\"createdAt\":\"2026-11-26T13:37:04.135Z\"},\"currentCategory\":\"NEEDS_REVIEW\"}\n\n"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}
