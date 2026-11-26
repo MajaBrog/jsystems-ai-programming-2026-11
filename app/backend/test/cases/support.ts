@@ -15,6 +15,8 @@ import type { Assessment, ChatContext, ImageAnalysis } from '../../src/ai/domain
 import type { GuardedEvaluation } from '../../src/ai/guard/policyGuard.ts';
 import { makeAnalysis } from '../ai/support/fixtures.ts';
 import { checkInvariants } from '../support/invariants.ts';
+import { checkPersistedGuardRules } from '../support/guard-rules.ts';
+import { loadPromptRepository } from '../../src/ai/prompt/promptRepository.ts';
 import { testConfig } from '../support/test-config.ts';
 
 export const TODAY = '2026-11-26';
@@ -106,6 +108,8 @@ export type Harness = {
   fake: FakeSteps;
   uploadFiles(): string[];
   invariants(): string[];
+  /** TAC-002-02: persisted assessments re-checked against the date guard rules. */
+  guardRules(): string[];
   tableCounts(): { cases: number; assessments: number; messages: number };
   close(): Promise<void>;
 };
@@ -139,6 +143,7 @@ export async function createHarness(
     fake,
     uploadFiles: () => (existsSync(join(dataDir, 'uploads')) ? readdirSync(join(dataDir, 'uploads')) : []),
     invariants: () => checkInvariants(db, dataDir),
+    guardRules: () => checkPersistedGuardRules(db, loadPromptRepository().limits),
     tableCounts: () => ({ cases: count('cases'), assessments: count('assessments'), messages: count('messages') }),
     async close() {
       app.server.closeAllConnections(); // abandoned SSE clients must not block teardown

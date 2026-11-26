@@ -6,6 +6,7 @@ import type { Assessment, ChatContext, ImageAnalysis } from '../../../src/ai/dom
 import { examplePhoto } from '../../imaging/fixtures.ts';
 import { makeAnalysis, makeForm } from '../support/fixtures.ts';
 import { capture, prompts, startHarness, withContent, withFinishReason, withStatus, streamText, type Harness } from './harness.ts';
+import { CONFIDENCES, DAMAGE_TYPES, LIKELY_CAUSES } from '../../../src/ai/domain/types.ts';
 
 const TODAY = '2026-11-26';
 let h: Harness;
@@ -50,11 +51,17 @@ describe('imageAnalysis.analyse', () => {
     expect(Math.max(meta.width!, meta.height!)).toBeLessThanOrEqual(1568);
   });
 
-  it('replays vision-complaint-phone-1: complaint case uses the complaint vision prompt (AC-17)', async () => {
+  it('replays vision-complaint-phone-1: complaint case uses the complaint vision prompt (AC-17) and yields damage type, likely cause and confidence (AC-13)', async () => {
     const jpeg = (await compressForModel(await examplePhoto('phone-1.jpg'))).jpeg;
     h.replay.enqueue(await capture('vision-complaint-phone-1'));
     const result = await h.steps.imageAnalysis.analyse(complaintForm, jpeg);
     expect(result.usable).toBe(true);
+    // AC-13 — structure only (never what the photo shows): every field the complaint decision needs is present and valid.
+    expect(Array.isArray(result.damageTypes)).toBe(true);
+    for (const t of result.damageTypes) expect(DAMAGE_TYPES).toContain(t);
+    expect(LIKELY_CAUSES).toContain(result.likelyCause);
+    expect(result.likelyCause).not.toBe('NOT_APPLICABLE'); // complaints always state a likely cause
+    expect(CONFIDENCES).toContain(result.confidence);
     expect(system(0)).toBe(prompts.systemPrompt('vision', 'COMPLAINT'));
   });
 

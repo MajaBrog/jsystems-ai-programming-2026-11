@@ -16,7 +16,8 @@ import {
 
 let h: Harness;
 afterEach(async () => {
-  expect(h.invariants()).toEqual([]); // TAC-002-02, TAC-003-02
+  expect(h.invariants()).toEqual([]); // TAC-003-02 (I1-I4)
+  expect(h.guardRules()).toEqual([]); // TAC-002-02 (G1/G3 re-checked on persisted rows)
   await h.close();
 });
 
