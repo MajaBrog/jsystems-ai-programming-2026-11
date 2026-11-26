@@ -1,0 +1,79 @@
+<section class="page">
+  <h1>Nowe zgłoszenie</h1>
+  <p class="lead">Sprawdź wstępnie, czy Twoja reklamacja lub zwrot zostaną przyjęte.</p>
+
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <span class="field-label" id="case-type-label">Rodzaj zgłoszenia</span>
+      <mat-button-toggle-group formControlName="caseType" aria-labelledby="case-type-label" class="case-type">
+        @for (t of caseTypes; track t[0]) {
+          <mat-button-toggle [value]="t[0]">{{ t[1] }}</mat-button-toggle>
+        }
+      </mat-button-toggle-group>
+      @if (errorOf('caseType'); as message) {
+        <p class="error" data-error="caseType">{{ message }}</p>
+      }
+    </div>
+
+    <mat-form-field>
+      <mat-label>Kategoria urządzenia</mat-label>
+      <mat-select formControlName="deviceCategory" required>
+        @for (c of categories; track c.value) {
+          <mat-option [value]="c.value">{{ c.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error data-error="deviceCategory">{{ errorOf('deviceCategory') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Nazwa modelu</mat-label>
+      <input matInput formControlName="modelName" required placeholder="np. Galaxy S24, ThinkPad T14" autocomplete="off" />
+      <mat-error data-error="modelName">{{ errorOf('modelName') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Data zakupu</mat-label>
+      <input matInput formControlName="purchaseDate" required [matDatepicker]="picker" [max]="today" placeholder="dd.mm.rrrr" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker #picker />
+      <mat-error data-error="purchaseDate">{{ errorOf('purchaseDate') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="description-field">
+      <mat-label>{{ descriptionLabel() }}</mat-label>
+      <textarea matInput formControlName="description" rows="4" [required]="isComplaint()"></textarea>
+      <mat-error data-error="description">{{ errorOf('description') }}</mat-error>
+    </mat-form-field>
+    <p class="counter" aria-live="off">{{ descriptionLength() }}/{{ descriptionMax }}</p>
+
+    <div class="field">
+      <span class="field-label">Zdjęcie urządzenia</span>
+      @if (photoAlert(); as message) {
+        <div class="alert form-alert" role="alert">
+          <p>{{ message }}</p>
+          <p class="tips">{{ unusableTips }}</p>
+        </div>
+      }
+      <app-photo-drop-zone formControlName="photo" [hint]="photoHint()" [error]="errorOf('photo')" />
+    </div>
+
+    @if (generalError(); as message) {
+      <div class="alert form-alert" role="alert">{{ message }}</div>
+    }
+    @if (serviceError(); as message) {
+      <div class="alert form-alert" role="alert">
+        <p>{{ message }}</p>
+        <button mat-flat-button type="submit">Spróbuj ponownie</button>
+      </div>
+    }
+
+    @if (submitting()) {
+      <div class="progress" role="status" aria-live="polite">
+        <mat-progress-bar mode="indeterminate" />
+        <p>{{ stageText() }}</p>
+      </div>
+    }
+
+    <button mat-flat-button type="submit" class="submit" [disabled]="submitting()">Wyślij zgłoszenie</button>
+  </form>
+</section>
