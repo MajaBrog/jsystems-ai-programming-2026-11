@@ -1,0 +1,57 @@
+@use '@angular/material' as mat;
+
+// Material M3 system tokens mapped onto the brand CSS variables from tokens.scss.
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (
+        plain-family: 'Atkinson Hyperlegible, sans-serif',
+        brand-family: 'Bangers, sans-serif',
+        bold-weight: 700,
+        medium-weight: 700,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--surface-strong),
+      on-primary: var(--on-surface-strong),
+      primary-container: var(--chat-agent),
+      on-primary-container: var(--on-surface),
+      secondary: var(--accent-warm),
+      on-secondary: var(--on-accent-warm),
+      secondary-container: var(--accent-warm),
+      on-secondary-container: var(--on-accent-warm),
+      tertiary: var(--accent),
+      on-tertiary: var(--on-accent),
+      error: var(--negative),
+      on-error: var(--on-accent),
+      surface: var(--surface),
+      on-surface: var(--on-surface),
+      on-surface-variant: var(--muted),
+      surface-container-lowest: var(--surface-raised),
+      surface-container-low: var(--surface-raised),
+      surface-container: var(--surface-raised),
+      surface-container-high: var(--surface-raised),
+      surface-container-highest: var(--surface-raised),
+      background: var(--surface),
+      on-background: var(--on-surface),
+      outline: var(--hairline),
+      outline-variant: var(--hairline),
+      shadow: var(--shadow),
+      corner-extra-small: var(--radius-sm),
+      corner-small: var(--radius-button),
+      corner-medium: var(--radius-md),
+      corner-large: var(--radius-card),
+      corner-extra-large: var(--radius-lg),
+    )
+  );
+}

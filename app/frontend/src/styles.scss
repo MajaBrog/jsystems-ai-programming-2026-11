@@ -1,39 +1,70 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
+@use './styles/tokens';
+@use './styles/material-theme';
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  background-color: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
   margin: 0;
-  height: 100%;
+  min-height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.08;
+  margin: 0 0 16px;
+}
+
+h1 { font-size: clamp(2rem, 4vw + 1rem, 3.45rem); line-height: 1; }
+h2 { font-size: clamp(1.75rem, 3vw + 1rem, 3.2rem); }
+h3 { font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem); }
+
+a { color: var(--surface-strong); }
+
+// Brand signature classes: thick ink outline + hard offset shadow, no blur.
+.btn {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  padding: 10.4px 16px;
+  border: var(--border-default) solid var(--hairline);
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--surface-raised);
+  color: var(--on-surface);
+
+  &.btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  &:focus-visible {
+    outline: var(--border-default) solid var(--accent-warm);
+    outline-offset: 2px;
+  }
+}
+
+.card {
+  background: var(--surface-raised);
+  padding: 24px;
+  border: var(--border-default) solid var(--hairline);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+}
+
+.page {
+  max-width: var(--prose-max);
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
