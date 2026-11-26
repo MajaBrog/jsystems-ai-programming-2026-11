@@ -17,3 +17,10 @@ ADR-004 §9 chat rows. Backend responses ONLY via `src/testing/capture-response.
 
 ## Return
 Files, red output, green counts, build, `git status --short`, PRD/ADR ambiguities.
+
+## Notes from T21 (orchestrator, after acceptance)
+- `core/` is flat: `core/models/index.ts`, `core/sse-client.ts` (`readSseEvents`, `postSse`, `toApiError`), `core/case-api.ts` (`CaseApi`, `FETCH` token). Async iterables, not Observables.
+- An SSE `error` event is **yielded**; an interrupted stream or network failure **throws** `ApiError` (`STREAM_INTERRUPTED` / `NETWORK`). Both → AC-31 (restore text + "Wyślij ponownie").
+- 409: the backend message is "Poczekaj na zakończenie odpowiedzi."; the UI shows the ADR-004 §3.5 text for code `REPLY_IN_PROGRESS` ("Poprzednia odpowiedź jest jeszcze generowana.") — a UI decision, not a capture edit.
+- Tests: use `captureFetch` / `captureResponse`; provide the `FETCH` token.
+- **Red first is mandatory**: run the failing tests and report the output before writing production code.

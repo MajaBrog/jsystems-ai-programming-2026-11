@@ -17,3 +17,10 @@ ADR-004 §9 form rows; backend responses ONLY via `src/testing/capture-response.
 
 ## Return
 Files, red output, green counts, build, `git status --short`, PRD/ADR ambiguities.
+
+## Notes from T21 (orchestrator, after acceptance)
+- `core/` is flat: `core/models/index.ts`, `core/sse-client.ts` (`readSseEvents`, `postSse`, `toApiError`), `core/case-api.ts` (`CaseApi`, `FETCH` token). Async iterables, not Observables.
+- An SSE `error` event is **yielded** (`{type:'error', code, message}`); an interrupted stream or network failure **throws** `ApiError` (`STREAM_INTERRUPTED` / `NETWORK`). Handle both as AC-30.
+- Abort ends iteration silently — check `signal.aborted`.
+- Tests: use `captureFetch` / `captureResponse` from `src/testing/capture-response.ts`; provide the `FETCH` token.
+- **Red first is mandatory**: run the failing tests and report the output before writing production code.
