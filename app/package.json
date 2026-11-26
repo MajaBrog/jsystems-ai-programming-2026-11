@@ -4,8 +4,9 @@
   "description": "Root scripts for the Hardware Service Decision Copilot PoC (backend + frontend)",
   "scripts": {
     "dev": "concurrently --names backend,frontend --prefix-colors blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
-    "dev:backend": "cd backend && APP_DATA_DIR=\"${APP_DATA_DIR:-$PWD/../../data}\" bash ../scripts/with-env.sh sh mvnw spring-boot:run",
-    "dev:frontend": "cd frontend && npx ng serve"
+    "dev:backend": "cd backend && APP_DATA_DIR=\"${APP_DATA_DIR:-$PWD/../../data}\" bash ../scripts/with-env.sh npm run dev",
+    "dev:frontend": "cd frontend && npx ng serve",
+    "test": "npm --prefix backend test && npm --prefix frontend exec -- ng test --no-watch"
   },
   "devDependencies": {
     "concurrently": "10.0.7"
