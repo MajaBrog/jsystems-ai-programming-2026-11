@@ -1,0 +1,13 @@
+{
+  "name": "copilot-e2e",
+  "private": true,
+  "type": "module",
+  "description": "End-to-end tests on the REAL stack (real backend, SQLite, OpenRouter). No mocks, no request interception.",
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  }
+}
