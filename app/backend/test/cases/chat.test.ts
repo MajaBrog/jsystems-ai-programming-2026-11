@@ -127,6 +127,32 @@ describe('POST /api/cases/:id/messages — assessment changed (AC-28)', () => {
     expect(view.messages.at(-1).assessmentCategory).toBe('REJECT');
   });
 
+  it('drops a change line the model repeated at the start of its reply (seen in real E2E runs)', async () => {
+    h = await createHarness({
+      fake: createFakeSteps({
+        evaluate: async () =>
+          fakeEvaluation({
+            categoryChanged: true,
+            newCategory: 'REJECT',
+            justification: [{ ruleId: 'Z-6.1', text: 'Zakup stacjonarny.' }],
+            nextSteps: ['Skontaktuj się z obsługą.'],
+          }),
+        // Model text shape observed in data/copilot.db after the E2E run (duplicate, slightly different wording).
+        stream: async (_c, _t, _e, onToken) => {
+          const reply = 'Wstępna ocena zmieniona: Przyjęte wstępnie → Odrzucona.\n\nZakup stacjonarny nie podlega zwrotowi.';
+          onToken(reply);
+          return reply;
+        },
+      }),
+    });
+    const id = await createCaseViaApi(h);
+    const events = await readSse(await postMessage(h.baseUrl, id, { content: 'Kupiłem w sklepie stacjonarnym.' }));
+    const content = events.at(-1)!.data.message.content as string;
+    expect(content.match(/Wstępna ocena zmieniona:/g)).toHaveLength(1);
+    expect(content).toBe(`Wstępna ocena zmieniona: Przyjęte wstępnie → Odrzucone wstępnie\n\nZakup stacjonarny nie podlega zwrotowi.\n\n${MANDATORY_NOTICE}`);
+    expect(rows(h, id)[2]!.content).toBe(content);
+  });
+
   it('a "changed" evaluation equal to the current category is treated as unchanged', async () => {
     h = await createHarness({
       fake: createFakeSteps({ evaluate: async () => fakeEvaluation({ categoryChanged: true, newCategory: 'ACCEPT', justification: [{ ruleId: 'Z-7.1', text: 'x' }] }) }),

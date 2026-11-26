@@ -95,7 +95,10 @@ export function createChatTurnService(deps: {
         if (reply.trim() === '') throw new LlmInvalidOutputError('empty reply');
         if (changedTo) emit(`\n\n${MANDATORY_NOTICE}`); // ADR-002 §3.6 step 4
         // The reply text returned by the step is authoritative for the stored message.
-        const finalContent = changedTo ? `${streamed}${reply}\n\n${MANDATORY_NOTICE}` : reply;
+        // The model sometimes repeats the change line the application already wrote (seen in real runs):
+        // drop it from the authoritative content; `completed` replaces the streamed text in the UI.
+        const body = changedTo ? reply.replace(/^\s*Wstępna ocena zmieniona:[^\n]*\n*/u, '') : reply;
+        const finalContent = changedTo ? `${streamed}${body}\n\n${MANDATORY_NOTICE}` : reply;
         if (signal.aborted) return; // client is gone: persist nothing
 
         const createdAt = clock.now();
