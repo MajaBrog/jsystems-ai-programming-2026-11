@@ -50,7 +50,7 @@ Covers the Angular SPA in `app/frontend`: project initialization, theming with t
 | `core/sse/SseClient` | `post(url, body): Observable<SseEvent>` using `fetch` with `AbortController`; parses `text/event-stream` (split on blank line, read `event:`/`data:`, ignore comment lines starting with `:`); non-2xx → reads JSON error body and errors the Observable with `ApiError`; unsubscribe → `abort()` |
 | `core/models` | TypeScript types mirroring 001 §4 (`CaseView`, `SseEvent` union, enums, `ApiError`) |
 | `features/case-form/CaseFormPage` | Reactive form, client validation (AC-02…AC-09), submission state machine, stage texts, unusable-photo and error alerts |
-| `shared/photo-drop-zone/PhotoDropZone` | Hidden `<input type=file accept="image/jpeg,image/png,image/webp">` + drag & drop area; validates type (MIME + extension) and size ≤ 10 MB before upload; preview via `URL.createObjectURL` (revoked on change/destroy); implements `ControlValueAccessor` |
+| `shared/photo-drop-zone/PhotoDropZone` | Hidden `<input type=file accept="image/jpeg,image/png,image/webp">` + drag & drop area; validates type (accepted when the browser MIME type **or** the extension is one of jpg/jpeg/png/webp — a mismatch between extension and real content, like `assets/example-images/laptop-1.png` which is a JPEG, must be accepted; the backend checks magic bytes) and size ≤ 10 MB before upload; preview via `URL.createObjectURL` (revoked on change/destroy); implements `ControlValueAccessor` |
 | `features/case-chat/CaseChatPage` | Loads case, holds `messages` signal and `currentCategory` signal, sends messages, handles streaming, retry |
 | `features/case-chat/CaseSummaryPanel` | Case type, category, model, date, thumbnail (click → `MatDialog` with full photo), assessment badge; collapsible (`mat-expansion-panel`) under 768 px |
 | `features/case-chat/MessageList` | `@for` over messages; agent left / customer right; auto-scroll to bottom when a message is added or streamed text grows (only if the user is near the bottom) |
@@ -125,7 +125,7 @@ Server-side field errors (400) are mapped onto the matching form controls; unkno
 ### 6.2 How the parts work together
 - **Browser ↔ Angular dev server (`:4200`) ↔ Spring Boot (`:8080`):** the dev server serves the SPA and proxies `/api/**` to Spring Boot, so the browser sees one origin and no CORS is configured.
 - **Spring Boot ↔ OpenRouter:** only the backend holds `OPENROUTER_API_KEY` and calls OpenRouter through the OpenAI Java SDK (002). The SDK's blocking stream runs on a virtual thread; each delta is written to an `SseEmitter` as a `token` event; Angular's `SseClient` reads it from `fetch`'s `ReadableStream`.
-- **SSE through the proxy:** backend sends `Cache-Control: no-cache`, `X-Accel-Buffering: no`, compression disabled. During scaffolding, verify incremental delivery with `curl -N` on `:8080` and on `:4200` (TAC-001-01). If the dev proxy buffers, fallback: call the backend directly on `:8080` from the SPA in dev with a CORS mapping limited to `http://localhost:4200` (record it here if used).
+- **SSE through the proxy:** backend sends `Cache-Control: no-cache`, `X-Accel-Buffering: no`, compression disabled. During integration, verify incremental delivery with the Node `fetch` probe (`app/scripts/sse-probe.mjs`) on `:8080` and on `:4200` (TAC-001-01; agents may not run `curl`). If the dev proxy buffers, fallback: call the backend directly on `:8080` from the SPA in dev with a CORS mapping limited to `http://localhost:4200` (record it here if used).
 - **One-command dev start:** root `app/package.json` script `dev` runs `./mvnw spring-boot:run` (in `app/backend`) and `ng serve` (in `app/frontend`) concurrently, after loading `.env`.
 - **Bundled mode:** `./mvnw -Pbundle-frontend package` runs frontend-maven-plugin 2.0.2 (installs a local Node 24, `npm ci`, `npm run build`), copies `app/frontend/dist/frontend/browser` into `target/classes/static`; Spring Boot serves the SPA and `SpaForwardingController` forwards client routes such as `/case/{id}` to `index.html`.
 
@@ -297,13 +297,17 @@ sequenceDiagram
 | Chat error (AC-31) | Unit | error event | local msgs removed, text restored, retry visible | 409 message |
 | Markdown (AC-29) | Unit | `**bold**`, list, `<script>` | rendered HTML, no raw markup, script stripped | — |
 | Not found (PRD 9.3) | Unit | GET 404 | "Nie znaleziono zgłoszenia" + button | — |
-| Responsive (AC-37) | E2E | viewport 360×740 | no horizontal scroll on both screens | summary panel collapsed |
-| Full return flow | E2E (real stack) | synthetic undamaged-device photo, date today−3d | chat with badge, sections, notice; reload restores (AC-33) | — |
-| Complaint + chat revision | E2E | synthetic damaged photo; chat message adding new facts | messages stream; if category changes, notice at start and badge updated | real model nondeterminism: assert structure, not specific category, except guard-enforced cases (late return → never "Przyjęte wstępnie") |
+| Validation on blur | Unit | focus and leave a required field empty | inline error shown without submit (PRD §9.1) | — |
+| Enter / Shift+Enter | Unit | keydown Enter / Shift+Enter in chat input | send / newline (PRD §9.2) | Enter while streaming does nothing |
+| Responsive (AC-37) | E2E (Chromium + Firefox projects) | viewport 360×740 | no horizontal scroll on both screens | summary panel collapsed |
+| Full return flow | E2E (real stack) | photos from `assets/example-images/` (each at least once, `setInputFiles`), date today−3d | chat with badge, sections, notice; reload restores (AC-33) | `laptop-1.png` (JPEG content) accepted |
+| Late return | E2E | any example photo, date today−30d | badge is not "Przyjęte wstępnie"; 14-day rule cited | — |
+| Physical-store revision (AC-28) | E2E | return with today−3d; chat: "Kupiłem to urządzenie w sklepie stacjonarnym." | **a change is required**: notice `Wstępna ocena zmieniona:` at the start and badge updated; if the first assessment was already REJECT and no change occurs, the test records it and repeats with another photo once, then fails | model nondeterminism otherwise handled by asserting structure only |
 
 ### Technical acceptance criteria
 - TAC-004-01: `npx ng test --no-watch` and `npx ng build` pass with zero errors and zero new warnings; production bundle contains no `OPENROUTER` string.
-- TAC-004-02: All user-visible strings are Polish; a unit test scans the label maps and templates for the English words "Submit", "Error", "Loading" (none found).
+- TAC-004-02: All user-visible strings are Polish; a unit test scans the label maps and templates for the English words "Submit", "Error", "Loading" (none found). Agent output language (AC-36) is checked in E2E (agent messages contain the Polish section headings) and read in Manual QA.
+- TAC-004-07: E2E runs on Playwright projects Chromium and Firefox; Edge is checked by the human in Manual QA (installing Edge needs `sudo`, denied to agents).
 - TAC-004-03: First visible streamed token appears in the DOM within 500 ms of receiving the corresponding `token` event (render throttle ≤ 50 ms).
 - TAC-004-04: Playwright E2E suite (`app/e2e`) runs against `npm run dev` with no mocks and passes; screenshots of the form, unusable-photo state, chat and not-found screens are saved for Manual QA and compared against `assets/homepage.png` brand reference.
 - TAC-004-05: Keyboard only: all form fields, the photo picker, submit, chat input and send are reachable and operable; badges include text, not color only.

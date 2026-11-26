@@ -48,7 +48,7 @@ Covers the Spring Boot application in `app/backend`: HTTP and SSE endpoints, req
 - The submission service persists **nothing** until the final assessment and first message exist; the photo file is written inside the same unit of work and deleted if the DB transaction fails (TAC-06 in 000).
 - A chat turn persists the customer message, the agent message and an optional new assessment in **one** transaction after the stream finished successfully. If the stream fails or the client disconnects mid-stream, nothing is written; the frontend restores the text (AC-31).
 - The submission date ("today") comes from an injected `Clock` (zone `Europe/Warsaw`) so date rules are testable.
-- Each SSE request runs on a virtual thread (`spring.threads.virtual.enabled=true`). `SseEmitter` timeout = `2 × LLM_TIMEOUT_SECONDS + 15 s` for submissions, `2 × LLM_TIMEOUT_SECONDS + 15 s` for chat turns (two LLM calls each).
+- Each SSE request runs on a virtual thread (`spring.threads.virtual.enabled=true`). `SseEmitter` timeout = `4 × LLM_TIMEOUT_SECONDS + 15 s` for submissions (vision + repair, decision + repair; ADR-002 §5) and `3 × LLM_TIMEOUT_SECONDS + 15 s` plus no cap while reply chunks keep arriving for chat turns (the emitter timeout is reset on each `token`, or set to 0 with the inactivity timeout of ADR-002 §3.1 doing the bounding).
 - Client disconnect (`IOException` on send, emitter completion callback) aborts the running SDK stream by closing it.
 
 ### Configuration (`application.yml` essentials)
@@ -90,7 +90,7 @@ Every event has `event:` name and a single-line JSON `data:`. Content type `text
 | Endpoint | Event | Data |
 |---|---|---|
 | submission | `stage` | `{ "stage": "ANALYZING_PHOTO" \| "ASSESSING" }` |
-| submission | `photo_unusable` | `{ "reason": "BLURRED" \| "TOO_DARK" \| "NO_DEVICE" \| "CATEGORY_MISMATCH", "message": "<Polish reason + tips>" }` — terminal |
+| submission | `photo_unusable` | `{ "reason": "BLURRED" \| "TOO_DARK" \| "NO_DEVICE" \| "CATEGORY_MISMATCH", "message": "<Polish reason + tips>" }` — terminal. `message` comes from a fixed backend map (one Polish text per `reason`), not from the LLM |
 | submission | `completed` | `{ "caseId": "<uuid>" }` — terminal |
 | both | `error` | `{ "code": "LLM_UNAVAILABLE" \| "LLM_INVALID_OUTPUT" \| "INTERNAL_ERROR", "message": "Usługa jest chwilowo niedostępna. Spróbuj ponownie." }` — terminal |
 | chat | `assessment_changed` | `{ "from": "<category>", "to": "<category>" }` — at most once, before any `token` |
@@ -121,11 +121,8 @@ Exactly one terminal event per stream; the server completes the emitter right af
 - **Stream:** [`assessment_changed`] → `token`* → (`completed` | `error`).
 
 ### Internal interfaces consumed (implemented in 002 / 003)
-- `ImageAnalysisStep.analyse(CaseForm, byte[] jpeg) → ImageAnalysis` (throws `LlmUnavailableException`, `LlmInvalidOutputException`)
-- `DecisionStep.decide(CaseForm, ImageAnalysis, LocalDate today) → Assessment` (guard applied inside `ai`)
-- `FirstMessageComposer.compose(CaseForm, Assessment) → String` (markdown)
-- `ChatEvaluateStep.evaluate(ChatContext, String customerText, LocalDate today) → ChatEvaluation` (guard applied)
-- `ChatReplyStep.stream(ChatContext, String customerText, ChatEvaluation, Consumer<String> onToken) → String fullText`
+- AI steps and composer: signatures exactly as in **ADR-002 §5** (single source; `today` is passed to `DecisionStep` and carried inside `ChatContext` for chat steps).
+- Listeners owned by the `cases` package: `SubmissionListener` (`stage`, `photoUnusable`, `completed`, `error`) and `ReplyListener` (`assessmentChanged`, `token`, `completed`, `error`), implemented by `SseEventWriter`.
 - Repositories: `CaseRepository`, `AssessmentRepository`, `MessageRepository` (003)
 
 ---
@@ -291,18 +288,18 @@ sequenceDiagram
 | File too large | Integration | 10 MB + 1 byte | 413 `FILE_TOO_LARGE` | exactly 10 MB accepted |
 | Spoofed image | Unit + Integration | `.jpg` with PDF bytes | 415 `UNSUPPORTED_IMAGE` | corrupt JPEG with valid header → 415 |
 | WEBP input | Unit | WEBP with alpha | JPEG output, long edge ≤ 1568, background white | 4000×3000 → 1568×1176; 800×600 unchanged |
-| Photo unusable | Integration | WireMock vision `usable=false, BLURRED` | `photo_unusable` event, 0 rows, no file | — |
-| LLM timeout | Integration | WireMock fixed delay > timeout (test timeout 2 s) | `error LLM_UNAVAILABLE`, 0 rows | 5xx, malformed JSON → `LLM_INVALID_OUTPUT` |
+| Photo unusable | Integration | stub from the real category-mismatch capture (ADR-002 D6 item 2) | `photo_unusable` event with mapped Polish message, 0 rows, no file | — |
+| LLM timeout | Integration | real vision capture replayed with fixed delay > timeout (test timeout 2 s) | `error LLM_UNAVAILABLE`, 0 rows | real 401 capture → `LLM_UNAVAILABLE`; capture with JSON body truncated (derived) → `LLM_INVALID_OUTPUT`; 5xx only per plan D-4 |
 | DB failure on persist | Unit (mocked repo throws) | — | `error INTERNAL_ERROR`, photo file deleted | — |
 | GET case | Integration | existing / unknown / malformed id | 200 view without image analysis / 404 / 404 | — |
-| Chat turn no change | Integration | evaluation `changed=false`, streamed chunks | `token`* then `completed`; 2 message rows; no `assessment_changed` | — |
-| Chat turn with change | Integration | evaluation `changed=true` | `assessment_changed` before first `token`; agent content starts with `Wstępna ocena zmieniona:`; new assessment row; case `currentCategory` updated | — |
-| Chat stream failure | Integration | WireMock stream with `finish_reason:"error"` chunk | `error`, 0 new rows | client disconnect mid-stream → 0 rows, SDK stream closed |
+| Chat turn no change | Integration | real chat-evaluate "unchanged" capture + streaming capture | `token`* then `completed`; 2 message rows; no `assessment_changed` | guard normalizes a proposed change back to current → same result |
+| Chat turn with change | Integration | real chat-evaluate "changed" capture (physical-store statement) | `assessment_changed` before first `token`; agent content starts with `Wstępna ocena zmieniona:`; new assessment row; case `currentCategory` updated | — |
+| Chat stream failure | Integration | streaming capture truncated (derived) | `error`, 0 new rows | client disconnect mid-stream → 0 rows, SDK stream closed |
 | Concurrent turns | Integration | two parallel POSTs, first stream delayed | second gets 409 | lock released after error |
 | SSE event mapping | Unit | listener calls | exact `event:`/`data:` lines, one terminal event | Polish characters UTF-8 |
 
 ### Technical acceptance criteria
-- TAC-001-01: `curl -N` against `http://localhost:8080/api/cases/{id}/messages` and through the Angular proxy at `http://localhost:4200/...` shows `token` events arriving incrementally (first event < 3 s after request with a real model), not in one block at the end.
+- TAC-001-01: a Node `fetch` probe script (`app/scripts/sse-probe.mjs`; `curl` is denied to agents) against `http://localhost:8080/api/cases/{id}/messages` and through the Angular proxy at `http://localhost:4200/...` shows `token` events arriving incrementally (first event < 3 s after request with a real model), not in one block at the end.
 - TAC-001-02: For any failure path in submission or chat, row counts in all three tables are unchanged and no orphan file exists in `uploads/`.
 - TAC-001-03: Every SSE stream ends with exactly one of `completed`, `photo_unusable`, `error`.
 - TAC-001-04: Images sent to the LLM are JPEG with long edge ≤ 1568 px (asserted on the WireMock-recorded request by decoding the data URL).

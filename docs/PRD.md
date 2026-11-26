@@ -6,6 +6,11 @@
 
 Hardware Service Decision Copilot is a proof of concept (PoC) of a self-service web application in which an end customer submits a complaint or a return for an electronics device, uploads one photo of the device and receives a **preliminary assessment** (Accept / Reject / Needs review) with a justification based on the company's complaint and return policies. After the assessment the customer can continue in a chat with the agent to ask questions or add information. The final decision is always made by the hardware service team after inspecting the device; the application only prepares and explains the preliminary assessment.
 
+### 1.1 Context and scale
+- **Type and scale:** PoC built during a training course; one fictional electronics store; single backend instance; expected volume below 50 cases per day and a few concurrent chats. Not a production system.
+- **Sector:** consumer electronics retail. Not a regulated sector (no finance, medical, government or military rules), but the product applies Polish/EU consumer law (Section 8) and processes data that may be personal (device photos, free-text descriptions), which is subject to GDPR in any real deployment.
+- **Data in the PoC:** only test data and the example device photos in `assets/example-images/`; no real customer data.
+
 ---
 
 ## 2. Problem Statement
@@ -40,7 +45,7 @@ Today the customer has to read the policy documents, guess whether the case qual
 1. The customer opens the application. The system shows the case form.
 2. The customer selects **Return**, a device category, enters the model name, purchase date and (optional for returns) a description, and uploads one photo.
 3. The system validates the form on the client side; all required fields are filled and the photo meets the format and size limits.
-4. The customer clicks **Submit**. The system shows a progress state ("Analysing photo…", then "Preparing assessment…").
+4. The customer clicks **Submit**. The system shows a progress state ("Analizujemy zdjęcie…", then "Przygotowujemy ocenę…"; see Section 9.1).
 5. The system compresses the photo and sends it to the image-analysis model with the **return** analysis instructions (is the device undamaged, are there signs of use, can it be resold as new).
 6. The system passes the image description, form data and the **return policy** document to the decision agent with the **return** decision instructions.
 7. The agent returns an assessment: category (Accept / Reject / Needs review), justification referencing the policy rules, and next steps.
@@ -73,7 +78,7 @@ Same as 4.1 with these differences:
 ### 4.6 Assessment revised in the chat
 1. The customer provides new information (e.g. "the device was bought in a stationary store, not online", "the scratch was there when I unpacked it").
 2. The agent re-evaluates using the same policy and context.
-3. If the category changes, the reply starts with a clearly marked notice: "Preliminary assessment changed: [old] → [new]", followed by the justification. The system stores the new assessment as the current one; the previous assessment stays in the history.
+3. If the category changes, the reply starts with a clearly marked notice: "Wstępna ocena zmieniona: [old] → [new]" (AC-28), followed by the justification. The system stores the new assessment as the current one; the previous assessment stays in the history.
 4. The agent cannot request or accept a new photo in the chat. If a new photo is needed, it tells the customer to start a new case.
 
 ### 4.7 Service error
@@ -145,7 +150,7 @@ Same as 4.1 with these differences:
 - AC-29: Agent messages render formatted text (headings, bold, bulleted lists); raw formatting markup is not shown to the customer.
 
 ### Errors
-- AC-30: When the image analysis or the agent fails or does not respond within 60 seconds, the customer sees "Usługa jest chwilowo niedostępna. Spróbuj ponownie." with a Try again button; on the form step all values including the photo are kept.
+- AC-30: When the image analysis or the agent fails or any single analysis/decision step does not respond within 60 seconds, the customer sees "Usługa jest chwilowo niedostępna. Spróbuj ponownie." with a Try again button; on the form step all values including the photo are kept.
 - AC-31: When a chat reply fails, the customer's message stays in the input field and can be resent with one click.
 
 ### Session

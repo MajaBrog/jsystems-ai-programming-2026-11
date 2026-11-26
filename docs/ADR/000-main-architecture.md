@@ -353,7 +353,7 @@ sequenceDiagram
         OR-->>AI: usable=false, reason=BLURRED
         API-->>FE: SSE photo_unusable {reason, message}
         FE->>FE: keep form values, clear photo, show alert (AC-14)
-    else timeout 60 s / 5xx / mid-stream error
+    else timeout 60 s / HTTP error (401, 4xx, 5xx)
         OR--xAI: failure
         API-->>FE: SSE error {code: LLM_UNAVAILABLE}
         FE->>FE: keep all values incl. photo, show retry (AC-30)
@@ -375,7 +375,7 @@ sequenceDiagram
     API->>DB: load case, analysis, assessments, messages
     API->>AI: evaluate(context, content)
     AI->>OR: chat.completions (json_schema ChatEvaluation)
-    OR-->>AI: changed=true, NEEDS_REVIEW → REJECT
+    OR-->>AI: categoryChanged=true, NEEDS_REVIEW → REJECT
     AI->>AI: PolicyGuard
     API-->>FE: SSE assessment_changed {from, to}
     API-->>FE: SSE token "Wstępna ocena zmieniona: …"
@@ -430,7 +430,9 @@ sequenceDiagram
 ### Philosophy
 TDD per `AGENTS.md`: write a failing test from a PRD AC or a TAC below, see it fail for the expected reason, implement the minimum, refactor while green. Every AC in the PRD maps to at least one automated test or an explicit Manual QA step. LLM behavior is tested in two ways: deterministic logic (guardrails, prompt assembly, parsing, SSE mapping) with mocks/WireMock, and real-model behavior with a small Playwright E2E set and Manual QA.
 
-Before writing any WireMock stub, capture a real OpenRouter response (non-streaming and streaming, vision and decision) with synthetic data and store it verbatim with date, model, request summary and no credentials in `app/backend/src/test/resources/openrouter-captures/` (AGENTS.md mock rule).
+Before writing any WireMock stub, record real OpenRouter calls (list and method in ADR-002 D6: WireMock record mode, happy paths and safely provokable errors) and store them verbatim with date, model, request summary and no credentials in `app/backend/src/test/resources/openrouter-captures/` (AGENTS.md mock rule). Stubs follow the derivation rule in ADR-002 D6.
+
+**Test photos:** only the real photos in `assets/example-images/`, used read-only and following its README: no renaming, no generated or blank images, and tests never assume in advance what the model sees. E2E and Manual QA therefore assert structure and guard-enforced outcomes (e.g. a late return is never accepted), not model-specific categories.
 
 ### Test layers
 
@@ -443,16 +445,16 @@ Before writing any WireMock stub, capture a real OpenRouter response (non-stream
 
 ### Key test scenarios
 Detailed per-area tables are in 001–004. Cross-cutting scenarios:
-- **Return happy path E2E**: synthetic photo of an undamaged device, purchase 3 days ago → chat opens, first message contains badge + "Uzasadnienie" + "Następne kroki" + mandatory notice.
-- **Complaint excluded damage E2E**: synthetic photo of a cracked screen, description of a drop → category is not ACCEPT (AC-21).
-- **Late return**: purchase 30 days ago → guard ensures REJECT/NEEDS_REVIEW with 14-day justification (unit + integration).
-- **Unusable photo**: WireMock returns `usable=false` → `photo_unusable` event, no DB rows (integration); E2E with a black image.
+- **Return E2E**: each example photo submitted as a return, purchase 3 days ago → chat opens, first message contains a badge + "Uzasadnienie" + "Następne kroki" + mandatory notice (structure only; any category).
+- **Complaint E2E**: example photos submitted as complaints with a description of the problem → same structural assertions; AC-21 itself is covered by guard unit tests (G4) because the model's view of a photo is not assumed.
+- **Late return**: purchase 30 days ago → never "Przyjęte wstępnie", 14-day rule cited (guard unit test + E2E).
+- **Unusable photo**: stub from the real category-mismatch capture → `photo_unusable`, no DB rows (integration); E2E submits a phone photo with category TV and expects either `photo_unusable` (CATEGORY_MISMATCH) or a completed assessment — the run records which (the model decides).
 - **LLM timeout**: WireMock delay > timeout → `error` event within timeout + 2 s, no DB rows.
-- **Chat revision**: WireMock evaluation `changed=true` → `assessment_changed` first, message starts with notice, new assessment row.
+- **Chat revision**: stub from the real chat-evaluate "changed" capture (`categoryChanged=true`) → `assessment_changed` first, message starts with notice, new assessment row.
 - **Resume**: reload `/case/{id}` → identical history (E2E).
 
 ### Technical acceptance criteria
-- TAC-01: `./mvnw verify` in `app/backend` and `npm test -- --no-watch` + `npm run build` in `app/frontend` pass with zero failures and zero new warnings.
+- TAC-01: `./mvnw verify` in `app/backend` and `npx ng test --no-watch` + `npx ng build` in `app/frontend` pass with zero failures and zero new warnings.
 - TAC-02: The OpenRouter API key appears in no HTTP response, no log line at INFO or below, and no frontend bundle (grep check on build output and logs).
 - TAC-03: The backend refuses to start with a clear error when `OPENROUTER_API_KEY` is empty.
 - TAC-04: Every PRD AC is referenced by ID in at least one test name or in the Manual QA checklist.
