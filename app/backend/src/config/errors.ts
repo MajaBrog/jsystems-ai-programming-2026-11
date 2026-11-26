@@ -48,7 +48,7 @@ function body(code: ErrorCode, message: string, fieldErrors: FieldError[] = []) 
 }
 
 /** Registers the JSON error handler and 404 handler. Never exposes internal error details. */
-export function registerErrorHandling(app: FastifyInstance): void {
+export function registerErrorHandling(app: FastifyInstance, opts: { spaFallback?: boolean } = {}): void {
   app.setErrorHandler((error: FastifyError | ApiError | Error, request, reply) => {
     if (error instanceof ApiError) {
       return reply.status(error.status).send(body(error.code, error.message, error.fieldErrors));
@@ -66,7 +66,13 @@ export function registerErrorHandling(app: FastifyInstance): void {
     return reply.status(500).send(body('INTERNAL_ERROR', INTERNAL_MESSAGE));
   });
 
-  app.setNotFoundHandler((_request, reply) => {
+  app.setNotFoundHandler((request, reply) => {
+    const path = request.url.split('?')[0] ?? '/';
+    const isClientRoute = request.method === 'GET' && !path.startsWith('/api/') && path !== '/api' && !/\.[a-z0-9]+$/i.test(path);
+    if (opts.spaFallback && isClientRoute) {
+      // Bundled mode: Angular client routes (e.g. /case/{id}) get index.html (ADR-001 SpaForwardingController).
+      return reply.type('text/html; charset=utf-8').sendFile('index.html');
+    }
     return reply.status(404).send(body('NOT_FOUND', 'Nie znaleziono zasobu.'));
   });
 }

@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:live": "vitest run --config vitest.live.config.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start:bundled": "npm --prefix ../frontend run build && FRONTEND_DIR=../frontend/dist/frontend/browser node src/server.ts"
   },
   "dependencies": {
     "@fastify/multipart": "^10.1.9",

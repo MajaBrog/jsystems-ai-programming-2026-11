@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import { buildApp } from './app.ts';
 import { ConfigError, loadConfig } from './config/config.ts';
 import { runStartupChecks } from './config/startup-checks.ts';
@@ -5,7 +6,8 @@ import { runStartupChecks } from './config/startup-checks.ts';
 try {
   const config = loadConfig(process.env);
   await runStartupChecks({ dataDir: config.dataDir });
-  const app = await buildApp({ config, logger: true });
+  const frontendDir = process.env['FRONTEND_DIR']?.trim();
+  const app = await buildApp({ config, logger: true, ...(frontendDir ? { frontendDir: resolve(frontendDir) } : {}) });
   await app.listen({ port: config.serverPort, host: '127.0.0.1' });
   console.log(`copilot-backend listening on http://127.0.0.1:${config.serverPort}`);
 } catch (error) {
