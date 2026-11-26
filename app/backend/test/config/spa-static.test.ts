@@ -15,12 +15,16 @@ async function staticDir() {
 
 describe('bundled mode (ADR-005 TAC-005-04, ADR-001 TAC-001-06)', () => {
   it('serves index.html at / and for client routes such as /case/<uuid>', async () => {
+    // Real HTTP (not inject): light-my-request's Response accumulates 'close' listeners on the
+    // not-found → sendFile path and prints MaxListenersExceededWarning; a real server does not.
     const app = await buildApp({ config: testConfig(), frontendDir: await staticDir() });
+    await app.listen({ port: 0, host: '127.0.0.1' });
+    const { port } = app.server.address() as { port: number };
     for (const url of ['/', '/case/0b9a3f0e-4a8e-4c2b-9d61-2f4f1c0b7a11']) {
-      const res = await app.inject({ url });
-      expect(res.statusCode, url).toBe(200);
-      expect(res.headers['content-type']).toContain('text/html');
-      expect(res.body).toContain('<app-root>');
+      const res = await fetch(`http://127.0.0.1:${port}${url}`);
+      expect(res.status, url).toBe(200);
+      expect(res.headers.get('content-type')).toContain('text/html');
+      expect(await res.text()).toContain('<app-root>');
     }
     await app.close();
   });

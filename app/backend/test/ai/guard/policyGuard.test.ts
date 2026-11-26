@@ -212,6 +212,38 @@ describe('guardChatEvaluation', () => {
     expect(r.guardApplied).toContain('G5');
   });
 
+  describe('G5 with categoryChanged=false and contradictions (AC-22)', () => {
+    const unchangedWithContradictions = () => makeEvaluation({ contradictions: ['Klient podał inną datę zakupu.'] });
+
+    it('ACCEPT + contradictions + unchanged -> NEEDS_REVIEW with G5 and the contradictions as unclear points', () => {
+      const r = run(unchangedWithContradictions(), 'ACCEPT');
+      expect(r.categoryChanged).toBe(true);
+      expect(r.newCategory).toBe('NEEDS_REVIEW');
+      expect(r.guardApplied).toContain('G5');
+      expect(r.unclearPoints).toEqual(['Klient podał inną datę zakupu.']);
+      expect(r.justification.length).toBeGreaterThan(0);
+      expect(r.justification.every((j) => repo.ruleIds('RETURN').has(j.ruleId))).toBe(true);
+      expect(r.nextSteps.length).toBeGreaterThan(0);
+    });
+
+    it('REJECT + contradictions + unchanged stays unchanged (AC-28 must not be blocked)', () => {
+      const r = run(unchangedWithContradictions(), 'REJECT');
+      expect(r.categoryChanged).toBe(false);
+      expect(r.newCategory).toBeNull();
+      expect(r.guardApplied).toEqual([]);
+    });
+
+    it('NEEDS_REVIEW + contradictions + unchanged stays unchanged', () => {
+      const r = run(unchangedWithContradictions(), 'NEEDS_REVIEW');
+      expect(r.categoryChanged).toBe(false);
+      expect(r.newCategory).toBeNull();
+    });
+
+    it('ACCEPT + no contradictions + unchanged stays unchanged', () => {
+      expect(run(makeEvaluation(), 'ACCEPT').categoryChanged).toBe(false);
+    });
+  });
+
   it('G1 applies in chat (never ACCEPT for a late return)', () => {
     const r = run(
       makeEvaluation({ categoryChanged: true, newCategory: 'ACCEPT', justification: [{ ruleId: 'Z-7.1', text: 'x' }], nextSteps: ['y'] }),

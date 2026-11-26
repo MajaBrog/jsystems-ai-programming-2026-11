@@ -154,7 +154,24 @@ export function guardChatEvaluation(input: GuardChatInput): GuardedEvaluation {
     guardApplied,
   });
 
-  if (!evaluation.categoryChanged) return unchanged([]);
+  if (!evaluation.categoryChanged) {
+    // G5 (AC-22): contradictions on an ACCEPT case force a review. Not applied to REJECT or
+    // NEEDS_REVIEW: a contradiction must not block or reverse a REJECT change (AC-28).
+    if (currentCategory === 'ACCEPT' && evaluation.contradictions.length > 0) {
+      const ruleId = base.caseType === 'RETURN' ? 'Z-7.3' : 'R-7.3';
+      return {
+        categoryChanged: true,
+        newCategory: 'NEEDS_REVIEW',
+        justification: [{ ruleId, text: 'W rozmowie pojawiły się sprzeczne informacje, więc ocena wymaga weryfikacji przez zespół serwisowy.' }],
+        nextSteps: ['Zespół serwisowy zweryfikuje zgłoszenie po otrzymaniu urządzenia.'],
+        contradictions: [...evaluation.contradictions],
+        offTopic: evaluation.offTopic,
+        unclearPoints: [...evaluation.contradictions],
+        guardApplied: ['G5'],
+      };
+    }
+    return unchanged([]);
+  }
   if (evaluation.newCategory === null) {
     throw new GuardInvalidOutputError('categoryChanged=true requires newCategory');
   }

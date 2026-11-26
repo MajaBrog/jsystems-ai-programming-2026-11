@@ -1,4 +1,5 @@
 import Fastify, { type FastifyInstance } from 'fastify';
+import { EventEmitter } from 'node:events';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { openSseStream } from '../../src/cases/sse-event-writer.ts';
 import { parseSse } from './support.ts';
@@ -70,5 +71,21 @@ describe('SseEventWriter', () => {
     const events = parseSse(await (await fetch(`${baseUrl}/sse`)).text());
     expect(events.map((e) => e.event)).toEqual(['token', 'error']);
     expect(events[1]!.data.code).toBe('INTERNAL_ERROR');
+  });
+});
+
+describe('openSseStream early disconnect', () => {
+  it('aborts the signal immediately when the socket is already destroyed (close fired before the listener)', () => {
+    const raw = Object.assign(new EventEmitter(), {
+      destroyed: true,
+      writeHead: () => raw,
+      flushHeaders: () => {},
+      write: () => true,
+      end: () => {},
+    });
+    const request = { raw: { socket: { destroyed: true, setNoDelay: () => {} } } };
+    const reply = { hijack: () => {}, raw };
+    const sse = openSseStream(request as never, reply as never);
+    expect(sse.signal.aborted).toBe(true);
   });
 });

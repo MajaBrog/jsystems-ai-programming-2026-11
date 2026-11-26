@@ -55,4 +55,20 @@ describe('error model (ADR-001 §4)', () => {
     expect(res.headers['access-control-allow-origin']).toBeUndefined();
     await app.close();
   });
+
+  it('only FST_REQ_FILE_TOO_LARGE maps to 413; other limit errors are 400 VALIDATION_FAILED', async () => {
+    const app = await buildApp({ config: testConfig() });
+    app.get('/api/probe/too-large', async () => { throw Object.assign(new Error('x'), { code: 'FST_REQ_FILE_TOO_LARGE', statusCode: 413 }); });
+    app.get('/api/probe/files-limit', async () => { throw Object.assign(new Error('x'), { code: 'FST_FILES_LIMIT', statusCode: 413 }); });
+    app.get('/api/probe/body-too-large', async () => { throw Object.assign(new Error('x'), { code: 'FST_ERR_CTP_BODY_TOO_LARGE', statusCode: 413 }); });
+    const big = await app.inject({ url: '/api/probe/too-large' });
+    expect(big.statusCode).toBe(413);
+    expect(big.json().code).toBe('FILE_TOO_LARGE');
+    for (const url of ['/api/probe/files-limit', '/api/probe/body-too-large']) {
+      const res = await app.inject({ url });
+      expect(res.statusCode).toBe(400);
+      expect(res.json()).toMatchObject({ code: 'VALIDATION_FAILED', message: 'Nieprawidłowe żądanie.' });
+    }
+    await app.close();
+  });
 });

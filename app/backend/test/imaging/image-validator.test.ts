@@ -37,4 +37,14 @@ describe('validateImage', () => {
     const big = Buffer.alloc(10 * 1024 * 1024 + 1, 0xff);
     expect(await validateImage(big)).toEqual({ ok: false, reason: 'FILE_TOO_LARGE' });
   });
+
+  it('rejects an image above the pixel limit before decoding (pixel bomb guard)', async () => {
+    const photo = await examplePhoto('phone-2.jpeg');
+    expect(await validateImage(photo, { maxPixels: 1000 })).toEqual({ ok: false, reason: 'UNSUPPORTED_TYPE' });
+  });
+  it('default pixel limit accepts every example photo (laptop-1.png is about 9.5 MP)', async () => {
+    for (const f of ['laptop-1.png', 'laptop-2.webp', 'phone-1.jpg', 'phone-2.jpeg', 'phone-3.jpeg']) {
+      expect((await validateImage(await examplePhoto(f))).ok).toBe(true);
+    }
+  });
 });

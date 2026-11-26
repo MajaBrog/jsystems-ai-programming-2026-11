@@ -29,7 +29,12 @@ export function openSseStream(request: FastifyRequest, reply: FastifyReply): Sse
     closed = true;
     if (!terminated) controller.abort();
   });
-  request.raw.socket.setNoDelay(true);
+  // The client may already be gone (close fired before the listener was attached).
+  if (raw.destroyed || request.raw.socket?.destroyed) {
+    closed = true;
+    controller.abort();
+  }
+  request.raw.socket?.setNoDelay(true);
 
   raw.writeHead(200, {
     'Content-Type': 'text/event-stream;charset=UTF-8',

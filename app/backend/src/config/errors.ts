@@ -54,7 +54,7 @@ export function registerErrorHandling(app: FastifyInstance, opts: { spaFallback?
       return reply.status(error.status).send(body(error.code, error.message, error.fieldErrors));
     }
     const code = (error as FastifyError).code;
-    if (code === 'FST_REQ_FILE_TOO_LARGE' || code === 'FST_FILES_LIMIT' || code === 'FST_ERR_CTP_BODY_TOO_LARGE') {
+    if (code === 'FST_REQ_FILE_TOO_LARGE') {
       const e = ApiError.fileTooLarge();
       return reply.status(e.status).send(body(e.code, e.message));
     }

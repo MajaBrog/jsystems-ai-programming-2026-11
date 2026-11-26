@@ -138,6 +138,42 @@ describe('POST /api/cases/:id/messages — assessment changed (AC-28)', () => {
   });
 });
 
+describe('POST /api/cases/:id/messages — content length in code points', () => {
+  it('2000 emoji are accepted, 2001 rejected', async () => {
+    h = await createHarness();
+    const id = await createCaseViaApi(h);
+    expect((await readSse(await postMessage(h.baseUrl, id, { content: '📱'.repeat(2000) }))).at(-1)!.event).toBe('completed');
+    expect((await postMessage(h.baseUrl, id, { content: '📱'.repeat(2001) })).status).toBe(400);
+  });
+});
+
+describe('POST /api/cases/:id/messages — G5 on an unchanged evaluation (AC-22)', () => {
+  it('persists a guard-made ACCEPT -> NEEDS_REVIEW as assessment_changed + CHAT_REVISION', async () => {
+    h = await createHarness({
+      fake: createFakeSteps({
+        evaluate: async () =>
+          fakeEvaluation({
+            categoryChanged: true,
+            newCategory: 'NEEDS_REVIEW',
+            justification: [{ ruleId: 'Z-7.3', text: 'Dane są sprzeczne.' }],
+            nextSteps: ['Zespół serwisowy zweryfikuje zgłoszenie.'],
+            unclearPoints: ['Sprzeczna data zakupu.'],
+            contradictions: ['Sprzeczna data zakupu.'],
+            guardApplied: ['G5'],
+          }),
+      }),
+    });
+    const id = await createCaseViaApi(h);
+    const events = await readSse(await postMessage(h.baseUrl, id, { content: 'Kupiłem to jednak wcześniej.' }));
+    expect(events[0]).toMatchObject({ event: 'assessment_changed', data: { from: 'ACCEPT', to: 'NEEDS_REVIEW' } });
+    expect(events.at(-1)!.data.currentCategory).toBe('NEEDS_REVIEW');
+    const a = h.db.prepare("SELECT * FROM assessments WHERE source = 'CHAT_REVISION'").all();
+    expect(a).toHaveLength(1);
+    expect(a[0]).toMatchObject({ category: 'NEEDS_REVIEW', previous_category: 'ACCEPT', guard_applied: 'G5' });
+    expect(h.db.prepare('SELECT current_category FROM cases WHERE id = ?').get(id)!.current_category).toBe('NEEDS_REVIEW');
+  });
+});
+
 describe('POST /api/cases/:id/messages — failures (AC-31)', () => {
   it('stream failure mid-way -> error LLM_UNAVAILABLE after partial tokens; nothing persisted, lock released', async () => {
     h = await createHarness({

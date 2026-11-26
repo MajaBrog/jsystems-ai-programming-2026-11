@@ -1,4 +1,8 @@
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/** Checkout root: app/backend/src/config -> four levels up. Relative paths in .env resolve against it. */
+const CHECKOUT_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
 
 /** Typed application configuration from environment variables (ADR-000 §7). */
 export type AppConfig = {
@@ -45,7 +49,7 @@ export function loadConfig(env: Env): AppConfig {
     llmVisionModel: value(env, 'LLM_VISION_MODEL') ?? llmModel,
     llmTimeoutSeconds: positiveInt(env, 'LLM_TIMEOUT_SECONDS', 60),
     appTitle: value(env, 'OPENROUTER_APP_TITLE') ?? null,
-    dataDir: resolve(value(env, 'APP_DATA_DIR') ?? './data'),
+    dataDir: resolve(CHECKOUT_ROOT, value(env, 'APP_DATA_DIR') ?? './data'),
     serverPort: positiveInt(env, 'SERVER_PORT', 8080),
   };
 }

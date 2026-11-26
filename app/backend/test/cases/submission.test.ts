@@ -156,6 +156,25 @@ describe('POST /api/cases — pre-stream validation', () => {
     }
   });
 
+  it('counts Unicode code points like SQLite length(): one emoji is 1 char, two are valid', async () => {
+    const bad = await postCase(h.baseUrl, { ...VALID_RETURN_FIELDS, modelName: '📱' }, await examplePhoto('phone-2.jpeg'));
+    expect(bad.status).toBe(400);
+    const body = await jsonOf(bad);
+    expect(body.code).toBe('VALIDATION_FAILED');
+    expect(body.fieldErrors[0].field).toBe('modelName');
+    expect(h.fake.analyse).not.toHaveBeenCalled();
+    const ok = await postCase(h.baseUrl, { ...VALID_RETURN_FIELDS, modelName: '📱📱' }, await examplePhoto('phone-2.jpeg'));
+    expect((await readSse(ok)).at(-1)!.event).toBe('completed');
+  });
+
+  it('accepts a 2000 code point description made of emoji; 2001 is rejected', async () => {
+    const photo = await examplePhoto('phone-2.jpeg');
+    const ok = await postCase(h.baseUrl, { ...VALID_RETURN_FIELDS, description: '📱'.repeat(2000) }, photo);
+    expect((await readSse(ok)).at(-1)!.event).toBe('completed');
+    const bad = await postCase(h.baseUrl, { ...VALID_RETURN_FIELDS, description: '📱'.repeat(2001) }, photo);
+    expect(bad.status).toBe(400);
+  });
+
   it('rejects a description longer than 2000 characters', async () => {
     const res = await postCase(h.baseUrl, { ...VALID_RETURN_FIELDS, description: 'a'.repeat(2001) }, await examplePhoto('phone-2.jpeg'));
     expect(res.status).toBe(400);
@@ -200,6 +219,21 @@ describe('POST /api/cases — size limit (AC-08)', () => {
     h = await createHarness({ maxPhotoBytes: 200_000 });
     const events = await readSse(await postCase(h.baseUrl, VALID_RETURN_FIELDS, await examplePhoto('phone-1.jpg')));
     expect(events.at(-1)!.event).toBe('completed');
+  });
+});
+
+describe('POST /api/cases — more than one file part', () => {
+  it('two file parts -> 400 VALIDATION_FAILED (not 413)', async () => {
+    h = await createHarness();
+    const photo = await examplePhoto('phone-1.jpg');
+    const form = new FormData();
+    for (const [k, v] of Object.entries(VALID_RETURN_FIELDS)) form.append(k, v);
+    form.append('photo', new Blob([new Uint8Array(photo.bytes)], { type: 'image/jpeg' }), 'a.jpg');
+    form.append('photo', new Blob([new Uint8Array(photo.bytes)], { type: 'image/jpeg' }), 'b.jpg');
+    const res = await fetch(`${h.baseUrl}/api/cases`, { method: 'POST', body: form });
+    expect(res.status).toBe(400);
+    expect(await jsonOf(res)).toMatchObject({ code: 'VALIDATION_FAILED' });
+    expect(h.fake.analyse).not.toHaveBeenCalled();
   });
 });
 
