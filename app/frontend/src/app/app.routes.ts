@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
-import { CaseFormPage } from './features/case-form/case-form.page';
-import { CaseChatPage } from './features/case-chat/case-chat.page';
 
+/** Feature pages are lazy-loaded so Material form/chat + markdown stay out of the initial bundle. */
 export const routes: Routes = [
-  { path: '', component: CaseFormPage },
-  { path: 'case/:id', component: CaseChatPage },
+  { path: '', loadComponent: () => import('./features/case-form/case-form.page').then((m) => m.CaseFormPage) },
+  { path: 'case/:id', loadComponent: () => import('./features/case-chat/case-chat.page').then((m) => m.CaseChatPage) },
   { path: '**', redirectTo: '' },
 ];
