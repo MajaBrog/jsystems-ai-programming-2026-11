@@ -1,6 +1,6 @@
 # Implementation Plan — Hardware Service Decision Copilot PoC
 
-> **Status: COMPLETE 2026-11-27 (rev. 3, Node backend). Push/PR, issues and Edge descoped by the human; branch stays local.** Originally: DRAFT — awaiting human review. Planning does not authorize execution, new agents, issue creation, publication or merge. Execution starts only after the human approves this plan (review gate, §12).
+> **Status: COMPLETE 2026-11-27 (rev. 3, Node backend). PR #3 open for human review; issues and Edge descoped by the human; T42 after merge.** Originally: DRAFT — awaiting human review. Planning does not authorize execution, new agents, issue creation, publication or merge. Execution starts only after the human approves this plan (review gate, §12).
 
 | | |
 |---|---|
@@ -174,8 +174,8 @@ Status: `Todo`, `Briefed`, `In progress`, `Review`, `Done`, `Blocked (<reason>)`
 | **T36** Traceability audit | AC-01…AC-37 and all TACs mapped to test names or Manual QA steps; gaps listed | PRD §6; ADR TACs; ADR-000 TAC-04 | T35 | OpenCode free model (read-only) → orchestrator verifies | — (results recorded in §8.4 of this plan) | Orchestrator opens ≥ 10 mapped tests; every gap → fix task or Manual QA step | Done — Haiku fallback (d788edc, 6367a5e) |
 | **T37** Manual QA | Real app driven with `playwright-cli`; every screen/state screenshotted and compared with the brand reference | AGENTS.md Manual QA; design-guidelines.md; PRD §9, §11.2 | T35, T36 | Orchestrator, then human (H7) | — | Checklist §8.2; screenshots listed in the PR (not committed); defects → fix tasks | Done by orchestrator; Edge descoped by the human (2026-11-27) |
 | **T38** Independent review | `/code-review high` + `/security-review` on the whole implementation diff; findings fixed or justified | AGENTS.md Code Review Rules; ADR-000 TAC-02 | T37 | Orchestrator; fixes to original owners | per finding | Full verification (§9) re-run after fixes | Done (51227de, efc66ad) |
-| **T41** Final PR | `feat/hardware-copilot-poc` pushed (after human confirmation) and one PR opened against the docs PR's merge target (`design-system`, or `main` if merged by then) | P4, P6 | T38, DoD items 1–8 | Orchestrator; human approves/merges | PR description only | PR lists commands + counts, E2E runs, Manual QA screenshots, review results, known limitations. Agent never merges | Descoped by the human (2026-11-27): keep local, no push/PR; PR text ready in docs/plans/hardware-copilot-pr-description.md |
-| **T42** Cleanup after merge | Plan and briefs deleted; no temporary worktrees left | P2; AGENTS.md Git Worktrees | Human merged T41 PR | Orchestrator | this plan, `docs/.agent-briefs/hardware-copilot-*` | `git rm` (plain `rm` denied); commit `Docs: remove completed implementation plan`; remove the planning worktree (`git worktree remove .claude/worktrees/prd-hardware-copilot`, `git worktree prune`) | Descoped by the human (2026-11-27): no merge, so no post-merge cleanup; plan and briefs stay |
+| **T41** Final PR | `feat/hardware-copilot-poc` pushed (after human confirmation) and one PR opened against the docs PR's merge target (`design-system`, or `main` if merged by then) | P4, P6 | T38, DoD items 1–8 | Orchestrator; human approves/merges | PR description only | PR lists commands + counts, E2E runs, Manual QA screenshots, review results, known limitations. Agent never merges | Done (2026-11-27): pushed to origin; PR #3 → design-system (MajaBrog fork); agent never merges |
+| **T42** Cleanup after merge | Plan and briefs deleted; no temporary worktrees left | P2; AGENTS.md Git Worktrees | Human merged T41 PR | Orchestrator | this plan, `docs/.agent-briefs/hardware-copilot-*` | `git rm` (plain `rm` denied); commit `Docs: remove completed implementation plan`; remove the planning worktree (`git worktree remove .claude/worktrees/prd-hardware-copilot`, `git worktree prune`) | Waiting for the human merge of PR #3; then delete plan/briefs and remove the planning worktree |
 ### 6.1 Dependency graph
 
 ```mermaid
@@ -357,7 +357,8 @@ Accepted gaps (documented, not automated): TAC-002-05 "+2 s" bound, TAC-004-03 5
 | 6 | Manual QA §8.2 done by the orchestrator with screenshots (`app/e2e/screenshots/qa-*.png`); Edge (H7) descoped by the human |
 | 7 | §8.4 traceability complete |
 | 8 | `/code-review high` 8 findings fixed (51227de, efc66ad); `/security-review` no findings ≥ 8; key absent from logs, responses and `dist` |
-| 9–10 | Descoped by the human (2026-11-27): branch stays local, no PR/merge/cleanup |
+| 9 | PR #3 open (https://github.com/MajaBrog/jsystems-ai-programming-2026-11/pull/3); human review and merge pending |
+| 10 | After merge: T42 cleanup |
 
 ---
 
