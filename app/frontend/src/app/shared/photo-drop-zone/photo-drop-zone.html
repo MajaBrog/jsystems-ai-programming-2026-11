@@ -1,0 +1,52 @@
+<div
+  class="drop-zone"
+  [class.dragging]="dragging()"
+  [class.disabled]="disabled()"
+  [class.invalid]="fileError() || error()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="dragging.set(false)"
+  (drop)="onDrop($event)"
+>
+  <input
+    #picker
+    class="file-input"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+    [multiple]="false"
+    [disabled]="disabled()"
+    (change)="onInputChange($event)"
+    (blur)="touched()"
+    tabindex="-1"
+    aria-hidden="true"
+  />
+
+  @if (file(); as f) {
+    <div class="selected">
+      <img class="preview" [src]="previewUrl()" alt="Podgląd wybranego zdjęcia" />
+      <span class="file-name">{{ f.name }}</span>
+      <button
+        type="button"
+        class="remove"
+        aria-label="Usuń zdjęcie"
+        [disabled]="disabled()"
+        (click)="remove()"
+      >
+        Usuń
+      </button>
+    </div>
+  }
+
+  <div class="prompt">
+    @if (hint()) {
+      <p class="hint">{{ hint() }}</p>
+    }
+    <p class="drag-text">Przeciągnij zdjęcie tutaj albo</p>
+    <button type="button" class="pick" [disabled]="disabled()" (click)="picker.click()" (blur)="touched()">
+      Wybierz plik
+    </button>
+    <p class="limits">Dozwolone formaty: JPG, PNG, WEBP. Maksymalny rozmiar: 10 MB.</p>
+  </div>
+</div>
+@if (fileError() ?? error(); as message) {
+  <p class="error" role="alert" data-error="photo">{{ message }}</p>
+}

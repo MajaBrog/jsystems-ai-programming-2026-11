@@ -1,0 +1,40 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-sizing: border-box;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: var(--border-default) solid var(--hairline);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: var(--surface-strong);
+}
+
+.logo {
+  display: block;
+  height: 36px;
+  aspect-ratio: 449.8 / 100;
+  background-color: currentColor;
+  mask: url('/logo.svg') no-repeat left center / contain;
+}
+
+.product {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+@media (max-width: 600px) {
+  .product { display: none; }
+}

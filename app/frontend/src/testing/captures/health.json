@@ -1,0 +1,21 @@
+{
+  "name": "health",
+  "capturedAt": "2026-11-26T13:35:51.264Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "GET",
+    "path": "/api/health"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "connection": "keep-alive",
+      "content-length": "15",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 26 Nov 2026 13:35:51 GMT",
+      "keep-alive": "timeout=72"
+    },
+    "body": "{\"status\":\"UP\"}"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

@@ -1,0 +1,26 @@
+{
+  "name": "chat-error",
+  "capturedAt": "2026-11-26T13:37:47.604Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "POST",
+    "path": "/api/cases/{id}/messages",
+    "body": {
+      "content": "Ile trwa rozpatrzenie zgłoszenia?"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "keep-alive",
+      "content-type": "text/event-stream;charset=UTF-8",
+      "date": "Thu, 26 Nov 2026 13:37:47 GMT",
+      "keep-alive": "timeout=72",
+      "transfer-encoding": "chunked",
+      "x-accel-buffering": "no"
+    },
+    "body": "event: error\ndata: {\"code\":\"LLM_UNAVAILABLE\",\"message\":\"Usługa jest chwilowo niedostępna. Spróbuj ponownie.\"}\n\n"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

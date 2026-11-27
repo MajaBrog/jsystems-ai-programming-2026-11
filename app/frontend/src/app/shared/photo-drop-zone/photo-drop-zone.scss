@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+.drop-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--surface-raised);
+  border: var(--border-default) dashed var(--hairline);
+  border-radius: var(--radius-md);
+
+  &.dragging {
+    background: var(--soft-blue);
+    border-style: solid;
+  }
+  &.invalid {
+    border-color: var(--negative);
+  }
+  &.disabled {
+    opacity: 0.6;
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.selected {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.preview {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border: var(--border-thin) solid var(--hairline);
+  border-radius: var(--radius-sm);
+}
+
+.file-name {
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.prompt p {
+  margin: 0 0 4px;
+}
+
+.hint {
+  font-weight: 700;
+}
+
+.drag-text,
+.limits {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.pick,
+.remove {
+  font: inherit;
+  font-weight: 700;
+  padding: 6px 12px;
+  background: var(--surface-raised);
+  color: var(--on-surface);
+  border: var(--border-thin) solid var(--hairline);
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid var(--accent-warm);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  margin: 4px 0 0;
+  color: var(--negative);
+  font-size: 14px;
+}

@@ -1,0 +1,92 @@
+@use '@angular/material' as mat;
+
+// Material M3 system tokens mapped onto the brand CSS variables from tokens.scss.
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (
+        plain-family: 'Atkinson Hyperlegible, sans-serif',
+        brand-family: 'Bangers, sans-serif',
+        bold-weight: 700,
+        medium-weight: 700,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--surface-strong),
+      on-primary: var(--on-surface-strong),
+      primary-container: var(--chat-agent),
+      on-primary-container: var(--on-surface),
+      secondary: var(--accent-warm),
+      on-secondary: var(--on-accent-warm),
+      secondary-container: var(--accent-warm),
+      on-secondary-container: var(--on-accent-warm),
+      tertiary: var(--accent),
+      on-tertiary: var(--on-accent),
+      error: var(--negative),
+      on-error: var(--on-accent),
+      surface: var(--surface),
+      on-surface: var(--on-surface),
+      on-surface-variant: var(--muted),
+      surface-container-lowest: var(--surface-raised),
+      surface-container-low: var(--surface-raised),
+      surface-container: var(--surface-raised),
+      surface-container-high: var(--surface-raised),
+      surface-container-highest: var(--surface-raised),
+      background: var(--surface),
+      on-background: var(--on-surface),
+      outline: var(--hairline),
+      outline-variant: var(--hairline),
+      shadow: var(--shadow),
+      corner-extra-small: var(--radius-sm),
+      corner-small: var(--radius-button),
+      corner-medium: var(--radius-md),
+      corner-large: var(--radius-card),
+      corner-extra-large: var(--radius-lg),
+    )
+  );
+
+  // Brand inputs (design-guidelines "Inputs"): white, 3px ink outline, 7px radius, yellow focus ring.
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: var(--hairline),
+      outlined-hover-outline-color: var(--hairline),
+      outlined-focus-outline-color: var(--accent-warm),
+      outlined-outline-width: 3px,
+      outlined-focus-outline-width: 3px,
+      outlined-container-shape: var(--radius-button),
+    )
+  );
+
+  // Brand primary button (design-guidelines "Primary button"): red, white Bangers 20px, 7px radius.
+  @include mat.button-overrides(
+    (
+      filled-container-color: var(--accent),
+      filled-label-text-color: var(--on-accent),
+      filled-label-text-font: var(--font-display),
+      filled-label-text-size: 20px,
+      filled-label-text-tracking: 0.02em,
+      filled-container-shape: var(--radius-button),
+    )
+  );
+}
+
+// Outline + hard shadow are not Material tokens: add them here, once.
+.mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-text-field-wrapper {
+  background: var(--surface-raised);
+  border-radius: var(--radius-button);
+}
+
+.mat-mdc-unelevated-button:not([disabled]) {
+  border: var(--border-default) solid var(--on-surface);
+  box-shadow: var(--shadow-md);
+}

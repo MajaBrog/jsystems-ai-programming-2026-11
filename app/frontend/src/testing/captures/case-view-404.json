@@ -1,0 +1,21 @@
+{
+  "name": "case-view-404",
+  "capturedAt": "2026-11-26T13:37:18.109Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "GET",
+    "path": "/api/cases/{unknown}"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "connection": "keep-alive",
+      "content-length": "82",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 26 Nov 2026 13:37:18 GMT",
+      "keep-alive": "timeout=72"
+    },
+    "body": "{\"code\":\"CASE_NOT_FOUND\",\"message\":\"Nie znaleziono zgłoszenia.\",\"fieldErrors\":[]}"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

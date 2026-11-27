@@ -1,0 +1,36 @@
+{
+  "capturedOn": "2026-11-26",
+  "model": "openai/gpt-6-luna",
+  "visionModel": "openai/gpt-6-luna",
+  "mismatchResult": {
+    "usable": false,
+    "unusableReason": "CATEGORY_MISMATCH",
+    "matchesCategory": false
+  },
+  "evaluateNeutral": {
+    "categoryChanged": false
+  },
+  "evaluatePhysicalStore": {
+    "categoryChanged": false,
+    "newCategory": null,
+    "ruleIds": []
+  },
+  "stream": {
+    "chunks": 37,
+    "firstTokenMs": 908,
+    "textLength": 226,
+    "keepAliveCommentSeen": false,
+    "endsWithDone": true,
+    "sdkIgnoredKeepAlive": true
+  },
+  "error401": {
+    "sdkErrorClass": "AuthenticationError",
+    "status": 401
+  },
+  "errorUnknownModel": {
+    "sdkErrorClass": "BadRequestError",
+    "status": 400
+  },
+  "requestPath": "/api/v1/chat/completions",
+  "attributionHeadersSent": []
+}

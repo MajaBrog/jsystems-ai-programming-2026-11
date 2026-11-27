@@ -1,0 +1,19 @@
+# Brief T38a — Review fixes (backend + dev script)
+
+Worker: Claude Sonnet subagent. Checkout `/home/labuser/jsystems-ai-programming-2026-11/.claude/worktrees/prd-hardware-copilot`, branch `feat/hardware-copilot-poc`. Read `app/backend/AGENTS.md` first. TDD for every fix: write the failing test, run it and record the red output, fix, green. Backend responses in tests only from real captures (`test/captures/openrouter`) or fake `AiSteps` as existing tests do. Commands from `app/backend`: `npm test`, `npm run typecheck` (0 errors). Do not commit.
+
+Concurrent: T38b edits `app/frontend/**` and `app/e2e/**` — do not touch them.
+
+## Fixes (from `/code-review high`)
+1. **G5 in chat when unchanged (important)** — `src/ai/guard/policyGuard.ts` `guardChatEvaluation` (~l.157): if the model returns `categoryChanged=false` with non-empty `contradictions` **and the current category is ACCEPT**, return a change ACCEPT → NEEDS_REVIEW with `guardApplied` containing `G5` and the contradictions as unclear points (AC-22). Do NOT apply this when the current category is REJECT or NEEDS_REVIEW (a contradiction must not block or reverse the Z-6.1 REJECT change of AC-28; capture `chat-evaluate-physical-store` has current REJECT + contradictions → must stay unchanged). Add unit tests for: ACCEPT+contradictions+unchanged → NEEDS_REVIEW (G5); REJECT+contradictions+unchanged → unchanged; NEEDS_REVIEW → unchanged; changed flows unaffected. Also check `ChatTurnService` persists this change correctly (assessment_changed + CHAT_REVISION) with a `cases/chat` test using fake steps that return the guarded result.
+2. **Pixel bomb (important)** — `src/imaging/image-validator.ts`: read `sharp(buf).metadata()` first; reject when `width*height` > 40 000 000 pixels (reason `UNSUPPORTED_TYPE` → 415, or a new reason mapped to 415) **before** decoding; then decode with `limitInputPixels` set to the same limit and without retaining the raw buffer (e.g. `.stats()` or decode to a discarded sink). Test with a real example photo + a lowered limit option (no generated images): `validateImage(buf, { maxPixels: 1000 })` rejects `phone-2.jpeg`; default limit accepts all example photos; `laptop-1.png` (3024×3135 ≈ 9.5 MP) accepted.
+3. **Code points (important)** — `src/cases/case-routes.ts` (~l.50) model name 2–100 and description ≤2000 and chat content 1–2000: count Unicode code points (`[...s].length`) to match SQLite `length()`. Test: `'📱'` → 400 VALIDATION_FAILED field `modelName`, steps not called; `'📱📱'` accepted.
+4. **Error mapping (nit)** — `src/config/errors.ts` (~l.57): only `FST_REQ_FILE_TOO_LARGE` → 413 FILE_TOO_LARGE; `FST_FILES_LIMIT` and `FST_ERR_CTP_BODY_TOO_LARGE` → 400 VALIDATION_FAILED (Polish message). Tests via probe routes / multipart with two file parts (real photo twice).
+5. **Early disconnect (nit)** — `src/cases/sse-event-writer.ts` (~l.28): after attaching the `close` listener, if `raw.destroyed || request.raw.socket?.destroyed` abort immediately. Unit test with a destroyed socket/response stub.
+6. **APP_DATA_DIR (nit)** — `app/package.json` `dev:backend` must let `.env` win: drop the inline `APP_DATA_DIR=…` and instead make `app/scripts/with-env.sh`-loaded value resolve relative to the repo root: in `src/config/config.ts`, resolve a relative `APP_DATA_DIR` against the **checkout root** (two levels above `app/backend`, derive via `new URL('../../../', import.meta.url)`), default `<root>/data`. Update `config.test.ts` (relative and absolute cases) and `app/backend/AGENTS.md` / `app/AGENTS.md` wording if needed. `.env.example` already says `./data`.
+
+## Editable files
+`app/backend/src/**`, `app/backend/test/**`, `app/package.json`, `app/AGENTS.md`, `app/backend/AGENTS.md`.
+
+## Return
+Per fix: test name(s), red output line, green; full `npm test` counts; typecheck; `git status --short`.

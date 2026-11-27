@@ -1,0 +1,35 @@
+:host {
+  display: inline-block;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 8px;
+  border: var(--border-thin) solid var(--hairline);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--on-surface);
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
+
+  &.accept {
+    background: var(--positive);
+    color: var(--on-surface-strong);
+  }
+  &.reject {
+    background: var(--negative);
+    color: var(--on-accent);
+  }
+  &.needs-review {
+    background: var(--accent-warm);
+    color: var(--on-accent-warm);
+  }
+}

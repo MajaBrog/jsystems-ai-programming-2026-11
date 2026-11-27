@@ -1,0 +1,26 @@
+{
+  "name": "chat-assessment-changed",
+  "capturedAt": "2026-11-26T13:37:18.099Z",
+  "target": "http://127.0.0.1:8080",
+  "request": {
+    "method": "POST",
+    "path": "/api/cases/{id}/messages",
+    "body": {
+      "content": "Chcę doprecyzować: kupiłem to urządzenie w sklepie stacjonarnym, nie przez internet."
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "no-cache",
+      "connection": "keep-alive",
+      "content-type": "text/event-stream;charset=UTF-8",
+      "date": "Thu, 26 Nov 2026 13:37:08 GMT",
+      "keep-alive": "timeout=72",
+      "transfer-encoding": "chunked",
+      "x-accel-buffering": "no"
+    },
+    "body": "event: assessment_changed\ndata: {\"from\":\"NEEDS_REVIEW\",\"to\":\"REJECT\"}\n\nevent: token\ndata: {\"text\":\"Wstępna ocena zmieniona: Wymaga weryfikacji → Odrzucone wstępnie\\n\\n\"}\n\nevent: token\ndata: {\"text\":\"D\"}\n\nevent: token\ndata: {\"text\":\"zię\"}\n\nevent: token\ndata: {\"text\":\"ku\"}\n\nevent: token\ndata: {\"text\":\"ję\"}\n\nevent: token\ndata: {\"text\":\" za\"}\n\nevent: token\ndata: {\"text\":\" dop\"}\n\nevent: token\ndata: {\"text\":\"re\"}\n\nevent: token\ndata: {\"text\":\"cy\"}\n\nevent: token\ndata: {\"text\":\"z\"}\n\nevent: token\ndata: {\"text\":\"owanie\"}\n\nevent: token\ndata: {\"text\":\".\"}\n\nevent: token\ndata: {\"text\":\" Pon\"}\n\nevent: token\ndata: {\"text\":\"ieważ\"}\n\nevent: token\ndata: {\"text\":\" urząd\"}\n\nevent: token\ndata: {\"text\":\"zenie\"}\n\nevent: token\ndata: {\"text\":\" zosta\"}\n\nevent: token\ndata: {\"text\":\"ło kup\"}\n\nevent: token\ndata: {\"text\":\"ione w\"}\n\nevent: token\ndata: {\"text\":\" sklepie\"}\n\nevent: token\ndata: {\"text\":\" stac\"}\n\nevent: token\ndata: {\"text\":\"jonarn\"}\n\nevent: token\ndata: {\"text\":\"ym,\"}\n\nevent: token\ndata: {\"text\":\" 14\"}\n\nevent: token\ndata: {\"text\":\"-dniowy\"}\n\nevent: token\ndata: {\"text\":\" zwrot ustaw\"}\n\nevent: token\ndata: {\"text\":\"owy nie ma\"}\n\nevent: token\ndata: {\"text\":\" zastosowania,\"}\n\nevent: token\ndata: {\"text\":\" a sklep nie\"}\n\nevent: token\ndata: {\"text\":\" przewiduje\"}\n\nevent: token\ndata: {\"text\":\" zwrotów uz\"}\n\nevent: token\ndata: {\"text\":\"naniowych dla\"}\n\nevent: token\ndata: {\"text\":\" takich zakupów.\"}\n\nevent: token\ndata: {\"text\":\" Zgłoszenie zw\"}\n\nevent: token\ndata: {\"text\":\"rotu jest więc w\"}\n\nevent: token\ndata: {\"text\":\"stępnie odr\"}\n\nevent: token\ndata: {\"text\":\"zucone. (Z-\"}\n\nevent: token\ndata: {\"text\":\"6.1\"}\n\nevent: token\ndata: {\"text\":\", Z-7.2\"}\n\nevent: token\ndata: {\"text\":\")\\n\\nJeśli urządzenie jest wad\"}\n\nevent: token\ndata: {\"text\":\"liwe\"}\n\nevent: token\ndata: {\"text\":\", może Pan zło\"}\n\nevent: token\ndata: {\"text\":\"żyć rekl\"}\n\nevent: token\ndata: {\"text\":\"amację na zasadach Regulamin\"}\n\nevent: token\ndata: {\"text\":\"u reklamacji albo skontaktować\"}\n\nevent: token\ndata: {\"text\":\" się z obsługą klienta. (\"}\n\nevent: token\ndata: {\"text\":\"Z-6.4)\"}\n\nevent: token\ndata: {\"text\":\"\\n\\nTo jest wstępna ocena. Ostateczną decyzję podejmie zespół serwisowy po otrzymaniu i sprawdzeniu urządzenia.\"}\n\nevent: completed\ndata: {\"message\":{\"id\":9,\"role\":\"AGENT\",\"content\":\"Wstępna ocena zmieniona: Wymaga weryfikacji → Odrzucone wstępnie\\n\\nDziękuję za doprecyzowanie. Ponieważ urządzenie zostało kupione w sklepie stacjonarnym, 14-dniowy zwrot ustawowy nie ma zastosowania, a sklep nie przewiduje zwrotów uznaniowych dla takich zakupów. Zgłoszenie zwrotu jest więc wstępnie odrzucone. (Z-6.1, Z-7.2)\\n\\nJeśli urządzenie jest wadliwe, może Pan złożyć reklamację na zasadach Regulaminu reklamacji albo skontaktować się z obsługą klienta. (Z-6.4)\\n\\nTo jest wstępna ocena. Ostateczną decyzję podejmie zespół serwisowy po otrzymaniu i sprawdzeniu urządzenia.\",\"createdAt\":\"2026-11-26T13:37:18.093Z\",\"assessmentCategory\":\"REJECT\"},\"currentCategory\":\"REJECT\"}\n\n"
+  },
+  "note": "Verbatim response of the real backend (T19). Frontend unit tests replay this; do not edit by hand."
+}

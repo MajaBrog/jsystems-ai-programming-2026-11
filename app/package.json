@@ -1,0 +1,15 @@
+{
+  "name": "hardware-copilot-app",
+  "private": true,
+  "description": "Root scripts for the Hardware Service Decision Copilot PoC (backend + frontend)",
+  "scripts": {
+    "dev": "concurrently --names backend,frontend --prefix-colors blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "cd backend && bash ../scripts/with-env.sh npm run dev",
+    "dev:frontend": "cd frontend && npx ng serve",
+    "test": "npm --prefix backend test && npm --prefix frontend exec -- ng test --no-watch",
+    "e2e": "cd e2e && npx playwright test"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.7"
+  }
+}

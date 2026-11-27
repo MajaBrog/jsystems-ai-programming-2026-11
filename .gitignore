@@ -30,8 +30,12 @@ playwright/.cache/
 .codex/tmp/
 .codex/*.sqlite*
 
-# Private agent briefs and Java build artifacts
-.agent-briefs/
+# Agent briefs in docs/.agent-briefs/ are committed (plan P2); worker logs are not.
+.agent-logs/
+# Runtime data (SQLite database, uploaded photos) and E2E screenshots
+data/
+app/e2e/screenshots/
+# Java build artifacts
 **/target/
 *.class
 /.idea

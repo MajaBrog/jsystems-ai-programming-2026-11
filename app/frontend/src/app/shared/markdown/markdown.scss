@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+:host ::ng-deep {
+  p,
+  ul,
+  ol {
+    margin: 0 0 8px;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    margin: 12px 0 4px;
+    line-height: 1.1;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  ul,
+  ol {
+    padding-left: 22px;
+  }
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
